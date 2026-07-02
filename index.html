@@ -1,0 +1,872 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Painel Financeiro Tracker</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        slate: { 800: '#1e293b', 900: '#0f172a' },
+                        light: { bg: '#fafafa', card: '#ffffff', border: '#e2e8f0' }
+                    },
+                    fontFamily: {
+                        sans: ['Inter', 'sans-serif'],
+                        mono: ['JetBrains Mono', 'monospace']
+                    }
+                }
+            }
+        }
+    </script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@500;700&display=swap" rel="stylesheet">
+    <style>
+        @tailwind base;
+        @tailwind components;
+        @tailwind utilities;
+
+        body { scrollbar-gutter: stable; }
+
+        @layer components {
+            .nav-link {
+                @apply text-gray-500 hover:text-slate-900 cursor-pointer outline-none pb-5 border-b-[3px] border-transparent pt-1 relative select-none;
+                display: inline-block;
+                transform: translateY(0) translateZ(0);
+                transition: transform 0.3s cubic-bezier(0.25, 1, 0.5, 1), color 0.2s ease;
+                will-change: transform;
+            }
+
+            .nav-link:hover { @apply text-slate-700; transform: translateY(-3px) translateZ(0); }
+            .nav-active { @apply text-slate-900 font-bold !important; transform: translateY(0) translateZ(0) !important; }
+            .nav-active::after {
+                content: ''; position: absolute; bottom: -6px; left: 0; width: 100%; height: 3px;
+                background-color: #0f172a; border-radius: 9999px; transform-origin: center;
+                animation: expandLine 0.3s cubic-bezier(0.25, 1, 0.5, 1) forwards;
+            }
+            .nav-active:hover { transform: translateY(0) translateZ(0) !important; }
+            .nav-link:active { transform: translateY(1px) translateZ(0) !important; transition: transform 0.08s ease !important; }
+            .view-section { transition: opacity 0.3s ease, transform 0.3s ease; transform: translateY(0) translateZ(0); opacity: 1; will-change: opacity, transform; }
+            .view-section.hidden { display: none !important; opacity: 0; transform: translateY(4px) translateZ(0); }
+            .hover-subtle { transition: transform 0.3s ease, border-color 0.3s ease, box-shadow 0.3s ease; transform: translateZ(0); will-change: transform; }
+            .hover-subtle:hover { transform: translateY(-2px) translateZ(0); @apply border-slate-300 shadow-md; }
+            .btn-interactive { transition: transform 0.2s ease, box-shadow 0.2s ease; @apply active:scale-95 shadow-sm hover:shadow; }
+            .input-field { @apply w-full bg-white border border-gray-300 rounded-lg p-4 text-slate-900 font-medium; transition: border-color 0.2s ease, box-shadow 0.2s ease; outline: none !important; }
+            .input-field:focus { border-color: transparent !important; box-shadow: 0 0 0 2px rgba(0, 0, 0, 0.1) !important; }
+            .input-clean { @apply w-full text-slate-900 py-1.5 px-2 placeholder-gray-400 font-medium shadow-none rounded-lg; transition: background-color 0.2s ease, box-shadow 0.2s ease; background-color: transparent !important; border: 1px solid transparent !important; outline: none !important; }
+            .input-clean:focus { background-color: rgba(0, 0, 0, 0.02) !important; border-color: transparent !important; box-shadow: 0 0 0 2px rgba(0, 0, 0, 0.1) !important; }
+            .custom-checkbox { -webkit-appearance: none !important; -moz-appearance: none !important; appearance: none !important; width: 1.5rem !important; height: 1.5rem !important; min-width: 1.5rem !important; min-height: 1.5rem !important; border: 2px solid #cbd5e1 !important; border-radius: 9999px !important; background-color: transparent !important; cursor: pointer; display: inline-flex !important; align-items: center; justify-content: center; position: relative; outline: none !important; transition: background-color 0.2s ease, border-color 0.2s ease, box-shadow 0.2s ease; }
+            .custom-checkbox:focus { box-shadow: 0 0 0 2px rgba(0, 0, 0, 0.1) !important; }
+            .custom-checkbox:checked { background-color: #1e293b !important; border-color: #1e293b !important; }
+            .custom-checkbox:checked::after { content: ''; position: absolute; width: 5px; height: 9px; border: solid white; border-width: 0 2px 2px 0; transform: rotate(45deg); top: 3px; left: 7px; }
+            .reorder-active { background-color: #eff6ff !important; box-shadow: inset 0 0 0 2px #3b82f6, 0 15px 25px -5px rgba(0, 0, 0, 0.1) !important; position: relative; z-index: 9999 !important; animation: reorderVibrate 0.3s infinite linear; border-radius: 0.5rem; will-change: transform; }
+            .reorder-active input, .reorder-active button, .reorder-active div { @apply cursor-grabbing pointer-events-none !important; }
+        }
+
+        @keyframes reorderVibrate {
+            0% { transform: scale(1.01) rotate(0deg) translateZ(0); }
+            25% { transform: scale(1.01) rotate(-0.3deg) translateZ(0); }
+            50% { transform: scale(1.01) rotate(0deg) translateZ(0); }
+            75% { transform: scale(1.01) rotate(0.3deg) translateZ(0); }
+            100% { transform: scale(1.01) rotate(0deg) translateZ(0); }
+        }
+
+        .cubic-bezier { transition-timing-function: cubic-bezier(0.34, 1.56, 0.64, 1) !important; }
+        @keyframes expandLine { from { transform: scaleX(0); opacity: 0; } to { transform: scaleX(1); opacity: 1; } }
+        .animate-fade-in { animation: fadeIn 0.3s ease-out forwards; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+        .event-pill { padding: 2px 6px; border-radius: 6px; margin-bottom: 2px; font-weight: 500; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; display: block; }
+        .color-dot { width: 24px; height: 24px; border-radius: 50%; cursor: pointer; border: 2px solid transparent; transition: all 0.2s; }
+        input[type="radio"]:checked+.color-dot { border-color: #1e293b !important; box-shadow: 0 0 0 3px #fff, 0 0 0 5px #1e293b !important; transform: scale(1.1); }
+        .hide-scrollbar::-webkit-scrollbar { display: none; }
+        .hide-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+    </style>
+</head>
+
+<body class="min-h-screen flex flex-col bg-slate-50 text-slate-800 pb-28 font-sans">
+
+    <nav class="bg-white border-b border-gray-200 sticky top-0 z-40 shadow-sm transition-all duration-300">
+        <div class="max-w-[1400px] mx-auto px-8 h-16 flex items-center justify-between">
+            <div class="flex gap-8 lowercase text-base font-semibold overflow-x-auto whitespace-nowrap hide-scrollbar">
+                <button onclick="switchView('visão geral')" class="nav-link nav-active" data-view="visão geral">visão geral</button>
+                <button onclick="switchView('fatura')" class="nav-link" data-view="fatura">fatura</button>
+                <button onclick="switchView('salário')" class="nav-link" data-view="salário">salário</button>
+                <button onclick="switchView('conexão bancária')" class="nav-link" data-view="conexão bancária">conexão bancária</button>
+                <button onclick="switchView('calendário')" class="nav-link" data-view="calendário">calendário</button>
+            </div>
+            <div class="flex items-center gap-6 text-sm lowercase font-bold tracking-wide shrink-0">
+                <input type="file" id="import-file" class="hidden" accept=".json">
+                <button onclick="document.getElementById('import-file').click()" class="text-slate-600 hover:text-slate-900 transition-colors duration-200 active:scale-95">importar</button>
+                <button onclick="exportState()" class="text-slate-600 hover:text-slate-900 transition-colors duration-200 active:scale-95">salvar</button>
+            </div>
+        </div>
+    </nav>
+
+    <main class="flex-1 max-w-[1400px] mx-auto w-full px-8 py-10 relative">
+        <div id="view-visão geral" class="view-section block space-y-10">
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-6">
+                <div class="bg-white rounded-xl border border-gray-200 p-6 hover-subtle flex flex-col justify-center">
+                    <p class="text-[10px] uppercase font-bold text-gray-500 mb-2 tracking-widest">Salário</p>
+                    <p class="text-2xl font-bold text-emerald-800" id="kpi-gross">R$ 0,00</p>
+                </div>
+                <div class="bg-white rounded-xl border border-gray-200 p-6 hover-subtle flex flex-col justify-center">
+                    <p class="text-[10px] uppercase font-bold text-gray-500 mb-2 tracking-widest">Saldo</p>
+                    <p class="text-2xl font-bold text-blue-800" id="kpi-balance">R$ 0,00</p>
+                </div>
+                <div class="bg-white rounded-xl border border-gray-200 p-6 hover-subtle flex flex-col justify-center">
+                    <p class="text-[10px] uppercase font-bold text-gray-500 mb-2 tracking-widest">Meus Gastos</p>
+                    <p class="text-2xl font-bold text-red-800" id="kpi-spent">R$ 0,00</p>
+                </div>
+                <div class="bg-white rounded-xl border border-gray-200 p-6 hover-subtle flex flex-col justify-center">
+                    <p class="text-[10px] uppercase font-bold text-gray-500 mb-2 tracking-widest">Terceiros</p>
+                    <p class="text-2xl font-bold text-amber-600" id="kpi-refunds">R$ 0,00</p>
+                </div>
+                <div class="bg-white rounded-xl border border-gray-200 p-6 hover-subtle flex flex-col justify-center">
+                    <p class="text-[10px] uppercase font-bold text-gray-500 mb-2 tracking-widest">Disponível</p>
+                    <p class="text-2xl font-bold text-emerald-800" id="kpi-available">R$ 0,00</p>
+                </div>
+            </div>
+            <div class="grid grid-cols-1 lg:grid-cols-2 gap-10 items-stretch">
+                <div class="bg-white rounded-xl border border-gray-200 p-8 flex flex-col h-full hover-subtle shadow-sm">
+                    <div class="flex justify-between items-center border-b border-gray-100 pb-3 mb-5">
+                        <h3 class="text-sm font-bold uppercase tracking-widest text-slate-800">Faturas</h3>
+                        <span id="overview-faturas-total" class="text-xs font-bold text-red-800 bg-red-50 px-3 py-1.5 rounded-lg border border-red-100">R$ 0,00</span>
+                    </div>
+                    <div id="overview-faturas-list" class="space-y-3 flex-1"></div>
+                </div>
+                <div class="bg-white rounded-xl border border-gray-200 p-8 flex flex-col h-full hover-subtle shadow-sm">
+                    <div class="flex justify-between items-center border-b border-gray-100 pb-3 mb-5">
+                        <h3 class="text-sm font-bold uppercase tracking-widest text-slate-800">Minhas Contas</h3>
+                        <span id="overview-contas-total" class="text-xs font-bold text-emerald-800 bg-emerald-50 px-3 py-1.5 rounded-lg border border-emerald-100">R$ 0,00</span>
+                    </div>
+                    <div id="overview-accounts-list" class="space-y-3 flex-1"></div>
+                </div>
+                <div class="bg-white rounded-xl border border-gray-200 p-8 lg:col-span-2 hover-subtle shadow-sm">
+                    <h3 class="text-sm font-bold uppercase tracking-widest mb-5 text-slate-800 border-b border-gray-100 pb-3">Dívidas Ativas</h3>
+                    <div id="overview-debts-list" class="grid grid-cols-1 md:grid-cols-2 gap-4"></div>
+                </div>
+            </div>
+        </div>
+
+        <div id="view-fatura" class="view-section hidden space-y-6">
+            <div class="flex justify-between items-center border-b border-gray-200 pb-4 mb-4">
+                <h2 class="text-xl font-bold text-slate-800 uppercase tracking-wide">CONTROLE DE FATURAS</h2>
+                <button onclick="openManageCategories()" class="flex items-center gap-2 px-4 py-2 bg-white border border-gray-200 hover:bg-slate-50 text-slate-600 hover:text-slate-900 font-bold lowercase rounded-lg transition-all btn-interactive shadow-sm">
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"></path><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path></svg> categorias
+                </button>
+            </div>
+            <div id="invoice-banks-container" class="grid grid-cols-1 gap-10 w-full"></div>
+        </div>
+
+        <div id="view-salário" class="view-section hidden space-y-8">
+            <div class="flex justify-between items-center border-b border-gray-200 pb-4">
+                <div class="flex items-center gap-6">
+                    <h2 class="text-xl font-bold text-slate-800 uppercase tracking-wide">FONTES DE RENDA</h2>
+                    <span class="text-base font-bold text-emerald-800 bg-emerald-50 px-4 py-2 rounded-lg border border-emerald-100" id="salario-total-header">R$ 0,00</span>
+                </div>
+                <button onclick="addIncomeRow()" class="px-5 py-2.5 bg-slate-800 hover:bg-slate-900 text-white text-base font-bold lowercase rounded-lg transition-all btn-interactive">+ adicionar renda</button>
+            </div>
+            <div class="bg-white border border-gray-200 rounded-xl overflow-hidden hover-subtle shadow-sm">
+                <table class="w-full text-left text-base border-collapse table-fixed">
+                    <thead>
+                        <tr class="border-b border-gray-200 bg-gray-50 uppercase text-xs tracking-wider text-gray-500 font-bold">
+                            <th class="pl-8 py-5 w-[60%]">Descrição da Origem</th>
+                            <th class="px-6 py-5 w-[30%] text-right">Valor Mensal</th>
+                            <th class="pr-8 py-5 w-[10%] text-center">Ações</th>
+                        </tr>
+                    </thead>
+                    <tbody id="income-table-body"></tbody>
+                </table>
+            </div>
+        </div>
+
+        <div id="view-conexão bancária" class="view-section hidden space-y-12">
+            <section>
+                <div class="flex justify-between items-center mb-6 border-b border-gray-200 pb-4">
+                    <h2 class="text-xl font-bold text-slate-800 uppercase tracking-wide">AJUSTE MANUAL DE LIQUIDEZ</h2>
+                    <button onclick="openBankModal()" class="px-5 py-2.5 bg-slate-800 hover:bg-slate-900 text-white text-base font-bold lowercase rounded-lg transition-all btn-interactive">+ novo banco</button>
+                </div>
+                <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6" id="banking-accounts-grid"></div>
+            </section>
+            <section>
+                <div class="flex justify-between items-center mb-6 border-b border-gray-200 pb-4">
+                    <h2 class="text-xl font-bold text-slate-800 uppercase tracking-wide">DÍVIDAS</h2>
+                    <button onclick="openDebtModal()" class="px-5 py-2.5 bg-slate-800 hover:bg-slate-900 text-white text-base font-bold lowercase rounded-lg transition-all btn-interactive">+ nova dívida</button>
+                </div>
+                <div class="grid grid-cols-1 lg:grid-cols-2 gap-6" id="banking-debts-grid"></div>
+            </section>
+        </div>
+
+        <div id="view-calendário" class="view-section hidden space-y-10">
+            <div class="bg-white rounded-2xl border border-gray-200 shadow-sm overflow-hidden p-6 w-full max-w-5xl mx-auto">
+                <header class="flex flex-col md:flex-row justify-between items-center mb-6 gap-4 border-b border-gray-100 pb-4">
+                    <div class="flex items-center gap-4">
+                        <button id="prev-btn" onclick="changeCalendarMonth(-1)" class="p-2 hover:bg-slate-100 text-slate-500 rounded-lg border border-gray-200 bg-white disabled:opacity-30 disabled:cursor-not-allowed">
+                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"></path></svg>
+                        </button>
+                        <div class="relative flex flex-col items-center justify-center min-w-[200px]">
+                            <h1 id="calendar-title" class="text-xl md:text-2xl font-bold text-slate-800 uppercase text-center cursor-pointer hover:text-blue-600 transition-colors">...</h1>
+                            <span id="calendar-year-subtitle" class="text-xs font-bold text-slate-400 mt-1 uppercase tracking-widest">ANO ...</span>
+                        </div>
+                        <button id="next-btn" onclick="changeCalendarMonth(1)" class="p-2 hover:bg-slate-100 text-slate-500 rounded-lg border border-gray-200 bg-white disabled:opacity-30 disabled:cursor-not-allowed">
+                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path></svg>
+                        </button>
+                    </div>
+                    <div class="flex items-center gap-3">
+                        <button onclick="openConfigModal()" class="text-xs font-bold uppercase tracking-widest text-blue-600 hover:text-blue-800 transition-colors">Configurar Ano Base</button>
+                        <button onclick="resetToCurrentMonth()" class="text-xs font-bold uppercase tracking-widest text-gray-400 hover:text-slate-800 transition-colors">Voltar para Jan</button>
+                    </div>
+                </header>
+
+                <div class="grid grid-cols-7 gap-2 text-center font-bold text-slate-500 mb-4 text-[10px] md:text-xs uppercase tracking-widest">
+                    <div class="py-2">Dom</div><div class="py-2">Seg</div><div class="py-2">Ter</div><div class="py-2">Qua</div><div class="py-2">Qui</div><div class="py-2">Sex</div><div class="py-2">Sáb</div>
+                </div>
+                <div id="calendar-grid" class="grid grid-cols-7 gap-2"></div>
+            </div>
+        </div>
+    </main>
+
+    <div id="bottom-bar-wrapper" class="fixed bottom-0 left-0 w-full z-50 transition-all duration-500 cubic-bezier translate-y-0">
+        <button onclick="toggleBottomBar()" class="absolute -top-7 left-1/2 -translate-x-1/2 bg-white border border-gray-300 border-b-0 rounded-t-xl px-8 py-1 shadow-sm text-gray-500 hover:text-slate-800 transition-colors outline-none cursor-pointer">
+            <svg id="bottom-bar-icon" class="w-5 h-5 transition-transform duration-300" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path id="bottom-bar-path" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path></svg>
+        </button>
+        <div class="w-full bg-white border-t border-gray-300 shadow-[0_-10px_30px_-10px_rgba(0,0,0,0.05)] py-4">
+            <div class="max-w-[1400px] mx-auto px-8 flex items-center justify-between text-base">
+                <div class="flex flex-wrap items-center gap-x-8 gap-y-2">
+                    <div class="flex items-baseline gap-2 shrink-0"><span class="text-gray-500 text-[10px] md:text-xs font-bold uppercase tracking-widest">saldo:</span><span id="bot-saldo" class="font-bold text-slate-900 tracking-tight text-lg whitespace-nowrap">R$ 0,00</span></div>
+                    <div class="flex items-baseline gap-2 shrink-0"><span class="text-gray-500 text-[10px] md:text-xs font-bold uppercase tracking-widest">dívidas:</span><span id="bot-dividas" class="font-bold text-slate-900 tracking-tight text-lg whitespace-nowrap">R$ 0,00</span></div>
+                    <div class="flex items-baseline gap-2 shrink-0"><span class="text-gray-500 text-[10px] md:text-xs font-bold uppercase tracking-widest">faturas:</span><span id="bot-faturas" class="font-bold text-slate-900 tracking-tight text-lg whitespace-nowrap">R$ 0,00</span></div>
+                    <div class="flex items-baseline gap-2 shrink-0"><span class="text-gray-500 text-[10px] md:text-xs font-bold uppercase tracking-widest">meus gastos:</span><span id="bot-meus-gastos" class="font-bold text-slate-900 tracking-tight text-lg whitespace-nowrap">R$ 0,00</span></div>
+                    <div class="flex items-baseline gap-2 shrink-0"><span class="text-gray-500 text-[10px] md:text-xs font-bold uppercase tracking-widest">terceiros:</span><span id="bot-terceiros" class="font-bold text-slate-900 tracking-tight text-lg whitespace-nowrap">R$ 0,00</span></div>
+                </div>
+                <div class="flex items-center gap-3 border-l border-gray-200 pl-6 shrink-0">
+                    <span class="text-slate-800 text-[10px] md:text-xs font-bold uppercase tracking-widest">disponível:</span><span id="bot-disponivel" class="font-bold tracking-tight text-xl text-emerald-800 whitespace-nowrap">R$ 0,00</span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div id="modal-container" class="fixed inset-0 bg-slate-900/40 backdrop-blur-[2px] z-[60] flex items-center justify-center p-4 transition-opacity duration-300 opacity-0 pointer-events-none hidden">
+        <div class="bg-white border border-gray-200 rounded-2xl w-full max-w-lg p-8 shadow-2xl scale-95 transition-transform duration-300 cubic-bezier" id="modal-content"></div>
+    </div>
+
+    <div id="action-menu" class="hidden fixed bg-white border border-gray-200 shadow-xl rounded-xl py-2 w-48 z-[100] transform scale-95 opacity-0 transition-all duration-200 origin-top-left">
+        <button id="ctx-btn-category" class="w-full text-left px-5 py-3 text-sm text-purple-600 font-bold hover:bg-purple-50 transition-colors flex items-center gap-3 outline-none hidden"><svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 7h.01M7 3h5c.512 0 1.024.195 1.414.586l7 7a2 2 0 010 2.828l-7 7a2 2 0 01-2.828 0l-7-7A1.994 1.994 0 013 12V7a4 4 0 014-4z"></path></svg><span>categoria</span></button>
+        <button id="ctx-btn-move" class="w-full text-left px-5 py-3 text-sm text-blue-600 font-bold hover:bg-blue-50 transition-colors flex items-center gap-3 outline-none hidden"><svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 8h16M4 16h16"></path></svg><span>mover</span></button>
+        <button id="ctx-btn-refund" class="w-full text-left px-5 py-3 text-sm text-emerald-700 font-bold hover:bg-emerald-50 transition-colors flex items-center gap-3 outline-none hidden"><svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg><span id="ctx-refund-text">reembolso</span></button>
+        <button id="ctx-btn-delete" class="w-full text-left px-5 py-3 text-sm text-red-600 font-bold hover:bg-red-50 transition-colors flex items-center gap-3 outline-none hidden"><svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path></svg><span>excluir</span></button>
+    </div>
+
+    <script>
+        const colorPalette = [
+            { bg: 'bg-[#FF2900]', hex: '#FF2900' }, { bg: 'bg-[#B31D00]', hex: '#B31D00' }, { bg: 'bg-[#FF0000]', hex: '#FF0000' }, { bg: 'bg-[#8B0000]', hex: '#8B0000' },
+            { bg: 'bg-[#FF9500]', hex: '#FF9500' }, { bg: 'bg-[#B36900]', hex: '#B36900' }, { bg: 'bg-[#EAFF00]', hex: '#EAFF00' }, { bg: 'bg-[#A3B300]', hex: '#A3B300' },
+            { bg: 'bg-[#51FF00]', hex: '#51FF00' }, { bg: 'bg-[#38B300]', hex: '#38B300' }, { bg: 'bg-[#000DA6]', hex: '#000DA6' }, { bg: 'bg-[#00086B]', hex: '#00086B' },
+            { bg: 'bg-[#00EEFF]', hex: '#00EEFF' }, { bg: 'bg-[#0099A3]', hex: '#0099A3' }, { bg: 'bg-[#8A2BE2]', hex: '#8A2BE2' }, { bg: 'bg-[#5D1E99]', hex: '#5D1E99' },
+            { bg: 'bg-[#FF00F8]', hex: '#FF00F8' }, { bg: 'bg-[#B30065]', hex: '#B30065' }, { bg: 'bg-[#454545]', hex: '#454545' }
+        ];
+
+        const monthNames = ['Janeiro', 'Fevereiro', 'Março', 'Abril', 'Maio', 'Junho', 'Julho', 'Agosto', 'Setembro', 'Outubro', 'Novembro', 'Dezembro'];
+
+        let appState = {
+            currentView: 'fatura', incomes: [], persistentDebts: [], banks: [], calendarEvents: {}, categories: [], calendarSettings: null
+        };
+
+        document.addEventListener('DOMContentLoaded', init);
+
+        function init() {
+            const saved = localStorage.getItem('faturaTrackerFinalState_v7');
+            if (saved) { try { appState = { ...appState, ...JSON.parse(saved) }; } catch (e) { console.error(e); } }
+
+            // Configuração Base do Calendário Isolado
+            if (!appState.calendarSettings) {
+                appState.calendarSettings = { month: 0, year: 2026, isLeap: false, startDayOfYear: 4 }; // Padrão: 2026, Jan 1º = Qui(4)
+            }
+            if (!appState.calendarEvents) appState.calendarEvents = {};
+
+            switchView(appState.currentView);
+            setupDOMListeners();
+        }
+
+        function saveState() {
+            localStorage.setItem('faturaTrackerFinalState_v7', JSON.stringify(appState));
+            updateBottomBarMetrics();
+            renderCurrentView();
+        }
+
+        /* LÓGICA CORE DO CALENDÁRIO */
+        window.getDaysInMonth = function (monthIndex) {
+            const isLeap = appState.calendarSettings.isLeap || false;
+            const days = [31, isLeap ? 29 : 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31];
+            return days[monthIndex];
+        };
+
+        window.calculateMonthStart = function (targetMonth) {
+            let startDay = appState.calendarSettings.startDayOfYear || 0;
+            let daysPassed = 0;
+            for (let i = 0; i < targetMonth; i++) {
+                daysPassed += getDaysInMonth(i);
+            }
+            return (startDay + daysPassed) % 7;
+        };
+
+        window.openConfigModal = function () {
+            openModal(`
+                <h3 class="text-xl font-bold mb-4">Configuração Fixa do Ano</h3>
+                <div class="space-y-4">
+                    <div>
+                        <label class="block text-xs font-bold uppercase text-gray-500 mb-1">Qual o ano base?</label>
+                        <input type="number" id="cfg-year" value="${appState.calendarSettings.year}" class="input-field border p-2 w-full">
+                    </div>
+                    <div>
+                        <label class="block text-xs font-bold uppercase text-gray-500 mb-1">Ano é Bissexto (Fev = 29 dias)?</label>
+                        <select id="cfg-leap" class="input-field border p-2 w-full">
+                            <option value="nao" ${!appState.calendarSettings.isLeap ? 'selected' : ''}>Não</option>
+                            <option value="sim" ${appState.calendarSettings.isLeap ? 'selected' : ''}>Sim</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label class="block text-xs font-bold uppercase text-gray-500 mb-1">1º de Janeiro cai em qual dia?</label>
+                        <select id="cfg-start" class="input-field border p-2 w-full">
+                            <option value="0" ${appState.calendarSettings.startDayOfYear == 0 ? 'selected' : ''}>Domingo</option>
+                            <option value="1" ${appState.calendarSettings.startDayOfYear == 1 ? 'selected' : ''}>Segunda-feira</option>
+                            <option value="2" ${appState.calendarSettings.startDayOfYear == 2 ? 'selected' : ''}>Terça-feira</option>
+                            <option value="3" ${appState.calendarSettings.startDayOfYear == 3 ? 'selected' : ''}>Quarta-feira</option>
+                            <option value="4" ${appState.calendarSettings.startDayOfYear == 4 ? 'selected' : ''}>Quinta-feira</option>
+                            <option value="5" ${appState.calendarSettings.startDayOfYear == 5 ? 'selected' : ''}>Sexta-feira</option>
+                            <option value="6" ${appState.calendarSettings.startDayOfYear == 6 ? 'selected' : ''}>Sábado</option>
+                        </select>
+                    </div>
+                    <div class="flex gap-2 pt-4">
+                        <button type="button" onclick="closeModal()" class="bg-gray-200 p-3 rounded-lg w-full font-bold text-sm hover:bg-gray-300">Cancelar</button>
+                        <button type="button" onclick="saveYearConfig()" class="bg-slate-800 text-white p-3 rounded-lg w-full font-bold text-sm hover:bg-slate-900">Salvar e Atualizar</button>
+                    </div>
+                </div>
+            `);
+        }
+
+        window.saveYearConfig = function () {
+            appState.calendarSettings.year = parseInt(document.getElementById('cfg-year').value) || 2026;
+            appState.calendarSettings.isLeap = document.getElementById('cfg-leap').value === 'sim';
+            appState.calendarSettings.startDayOfYear = parseInt(document.getElementById('cfg-start').value) || 0;
+            saveState(); closeModal(); renderCalendario();
+        }
+
+        window.changeCalendarMonth = function (offset) {
+            let nextMonth = appState.calendarSettings.month + offset;
+            // Trava rigorosa: Não passa de dezembro (11) nem volta de Janeiro (0)
+            if (nextMonth >= 0 && nextMonth <= 11) {
+                appState.calendarSettings.month = nextMonth;
+                saveState();
+            }
+        }
+
+        window.resetToCurrentMonth = function () {
+            appState.calendarSettings.month = 0; // Volta para Janeiro travado no ano fixo
+            saveState();
+        }
+
+        window.renderCalendario = function () {
+            const grid = document.getElementById('calendar-grid');
+            const title = document.getElementById('calendar-title');
+            const subtitle = document.getElementById('calendar-year-subtitle');
+            if (!grid || !title) return;
+
+            const { month, year } = appState.calendarSettings;
+            title.textContent = monthNames[month];
+            subtitle.textContent = `Ano Fixo: ${year}`;
+
+            // Gerencia botões (Travando em Jan e Dez)
+            const prevBtn = document.getElementById('prev-btn');
+            const nextBtn = document.getElementById('next-btn');
+            if (prevBtn) { prevBtn.disabled = (month === 0); }
+            if (nextBtn) { nextBtn.disabled = (month === 11); }
+
+            const daysInMonth = getDaysInMonth(month);
+            const startDayOfWeek = calculateMonthStart(month);
+            const prevMonthDays = month > 0 ? getDaysInMonth(month - 1) : 31; 
+
+            grid.innerHTML = '';
+
+            // Renderiza 42 células (6 semanas x 7 dias) para grid perfeito e alinhado
+            for (let i = 0; i < 42; i++) {
+                const dayEl = document.createElement('div');
+                
+                if (i < startDayOfWeek) {
+                    // Dias do mês anterior
+                    const dayNum = prevMonthDays - startDayOfWeek + i + 1;
+                    dayEl.className = `border border-gray-100 min-h-[96px] p-2 rounded-lg flex flex-col gap-1 bg-gray-50 opacity-40`;
+                    dayEl.innerHTML = `<span class="text-sm font-bold text-slate-400">${dayNum}</span>`;
+                } else if (i < startDayOfWeek + daysInMonth) {
+                    // Dias do mês atual
+                    const dayNum = i - startDayOfWeek + 1;
+                    const dateKey = `${year}-${String(month + 1).padStart(2, '0')}-${String(dayNum).padStart(2, '0')}`;
+                    
+                    dayEl.className = `border border-gray-100 min-h-[96px] p-2 rounded-lg flex flex-col gap-1 bg-white cursor-pointer hover:border-blue-300 transition-colors`;
+                    dayEl.onclick = () => openCalendarModal(dateKey, dayNum, monthNames[month], year);
+                    dayEl.innerHTML = `<span class="text-sm font-bold text-slate-800">${dayNum}</span>`;
+
+                    const eventsList = getCombinedEventsForDate(dateKey);
+                    eventsList.forEach(evt => {
+                        const color = colorPalette[evt.colorIndex] || colorPalette[0];
+                        dayEl.innerHTML += `<div class="event-pill text-[9px] text-white shadow-sm leading-tight px-1 py-0.5 rounded" style="background-color: ${color.hex};">${evt.text}</div>`;
+                    });
+                } else {
+                    // Dias do próximo mês
+                    const dayNum = i - startDayOfWeek - daysInMonth + 1;
+                    dayEl.className = `border border-gray-100 min-h-[96px] p-2 rounded-lg flex flex-col gap-1 bg-gray-50 opacity-40`;
+                    dayEl.innerHTML = `<span class="text-sm font-bold text-slate-400">${dayNum}</span>`;
+                }
+                grid.appendChild(dayEl);
+            }
+        };
+
+        function getCombinedEventsForDate(dateKey) {
+            const list = [];
+            const targetY = parseInt(dateKey.split('-')[0]);
+            const targetM = parseInt(dateKey.split('-')[1]);
+            const targetD = parseInt(dateKey.split('-')[2]);
+
+            appState.banks.forEach(b => {
+                b.cardInvoice.forEach(exp => {
+                    if (exp.date && exp.desc) {
+                        let parts = exp.date.split('/');
+                        let d = parseInt(parts[0]);
+                        let m = parts.length > 1 ? parseInt(parts[1]) : null;
+                        let y = parts.length > 2 ? parseInt(parts[2]) : null;
+
+                        if (!isNaN(d) && d === targetD) {
+                            if (m === null || m === targetM) {
+                                if (y === null || y === targetY) {
+                                    let evColorIndex = b.colorIndex;
+                                    if (exp.categoryId) {
+                                        const cat = appState.categories.find(c => c.id === exp.categoryId);
+                                        if (cat) evColorIndex = cat.colorIndex;
+                                    }
+                                    list.push({ text: exp.desc, colorIndex: evColorIndex, isAuto: true, value: exp.value });
+                                }
+                            }
+                        }
+                    }
+                });
+            });
+
+            if (appState.calendarEvents && appState.calendarEvents[dateKey]) {
+                appState.calendarEvents[dateKey].forEach((evt, idx) => { list.push({ text: evt.text, colorIndex: evt.colorIndex, isAuto: false, manualIndex: idx }); });
+            }
+            return list;
+        }
+
+        window.openCalendarModal = function (key, day, monthName, year) {
+            window.currentDayKey = key;
+            const colorsHtml = colorPalette.map((c, i) => `<label class="cursor-pointer"><input type="radio" name="cal-color" value="${i}" class="hidden" ${i === 0 ? 'checked' : ''}><div class="color-dot border-2 border-transparent transition-all shadow-sm" style="background-color: ${c.hex};"></div></label>`).join('');
+            const events = getCombinedEventsForDate(key);
+            const listHtml = events.map(e => {
+                const c = colorPalette[e.colorIndex] || colorPalette[0];
+                const actionBtn = e.isAuto ? `<span class="text-[10px] uppercase font-bold opacity-60 bg-black/10 px-2 py-0.5 rounded tracking-widest">Auto</span>` : `<button onclick="deleteCalendarEvent('${key}', ${e.manualIndex})" class="opacity-70 hover:opacity-100 font-bold bg-black/10 w-6 h-6 rounded-full flex items-center justify-center">×</button>`;
+                return `<div class="p-3 rounded-lg text-sm flex justify-between items-center text-white shadow-sm" style="background-color: ${c.hex};"><span class="font-bold flex items-center gap-2">${e.text} ${e.isAuto ? `<span class="opacity-70 text-xs font-mono ml-1">R$ ${formatMoney(e.value)}</span>` : ''}</span>${actionBtn}</div>`;
+            }).join('');
+
+            openModal(`
+                <h3 class="text-xl font-bold mb-6 text-slate-800 tracking-tight lowercase">dia ${day} de ${monthName.toLowerCase()}, ${year}</h3>
+                <div class="space-y-3 mb-6 max-h-72 overflow-y-auto pr-2">
+                    ${listHtml.length ? listHtml : '<p class="text-sm text-gray-500 border border-dashed border-gray-200 p-4 rounded-xl text-center">Nenhuma movimentação neste dia.</p>'}
+                </div>
+                <div class="border-t border-gray-100 pt-6">
+                    <input type="text" id="new-event-text" class="input-field mb-5" placeholder="Criar anotação manual para este dia...">
+                    <div class="flex gap-3 mb-6 items-center flex-wrap">${colorsHtml}</div>
+                    <div class="flex justify-end gap-3">
+                        <button onclick="closeModal()" class="px-5 py-2 text-slate-500 font-bold hover:text-slate-800 transition-colors">Fechar</button>
+                        <button onclick="addCalendarEvent()" class="px-5 py-2 bg-slate-800 text-white font-bold rounded-lg hover:bg-slate-900 shadow-lg btn-interactive">Adicionar Manualmente</button>
+                    </div>
+                </div>
+            `);
+        }
+
+        window.addCalendarEvent = function () {
+            const text = document.getElementById('new-event-text').value; const colorInput = document.querySelector('input[name="cal-color"]:checked');
+            if (!text || !colorInput) return; const colorIndex = parseInt(colorInput.value);
+            if (!appState.calendarEvents) appState.calendarEvents = {}; if (!appState.calendarEvents[window.currentDayKey]) appState.calendarEvents[window.currentDayKey] = [];
+            appState.calendarEvents[window.currentDayKey].push({ text, colorIndex }); saveState();
+            const parts = window.currentDayKey.split('-');
+            openCalendarModal(window.currentDayKey, parseInt(parts[2]), monthNames[parseInt(parts[1]) - 1], parts[0]);
+        }
+
+        window.deleteCalendarEvent = function (key, idx) {
+            if (appState.calendarEvents && appState.calendarEvents[key]) {
+                appState.calendarEvents[key].splice(idx, 1); saveState();
+                const parts = key.split('-');
+                openCalendarModal(key, parseInt(parts[2]), monthNames[parseInt(parts[1]) - 1], parts[0]);
+            }
+        }
+
+        /* INFRAESTRUTURA GERAL */
+        window.switchView = function (viewName) {
+            appState.currentView = viewName;
+            document.querySelectorAll('.nav-link').forEach(link => {
+                if (link.dataset.view === viewName) link.classList.add('nav-active'); else link.classList.remove('nav-active');
+            });
+            document.querySelectorAll('.view-section').forEach(sec => {
+                sec.classList.add('hidden'); sec.classList.remove('block');
+            });
+            const target = document.getElementById(`view-${viewName}`);
+            if (target) { target.classList.remove('hidden'); target.classList.add('block'); }
+            updateBottomBarMetrics(); renderCurrentView();
+        }
+
+        window.toggleBottomBar = function () {
+            const wrapper = document.getElementById('bottom-bar-wrapper'); const path = document.getElementById('bottom-bar-path');
+            wrapper.classList.toggle('translate-y-full');
+            if (wrapper.classList.contains('translate-y-full')) path.setAttribute('d', 'M5 15l7-7 7 7'); else path.setAttribute('d', 'M19 9l-7 7-7-7');
+        }
+
+        function renderCurrentView() {
+            if (appState.currentView === 'visão geral') renderVisaoGeral();
+            if (appState.currentView === 'fatura') renderFatura();
+            if (appState.currentView === 'salário') renderSalario();
+            if (appState.currentView === 'conexão bancária') renderConexaoBancaria();
+            if (appState.currentView === 'calendário') renderCalendario();
+        }
+
+        function updateBottomBarMetrics() {
+            let salario = appState.incomes.reduce((acc, inc) => acc + inc.value, 0);
+            let dividas = 0; appState.persistentDebts.forEach(d => { if (d.selectedForCurrentCycle && d.paidInstallments < d.totalInstallments) dividas += d.installmentValue; });
+            let saldo = salario - dividas;
+            let faturasBrutas = 0; let terceiros = 0; let meusGastos = 0;
+
+            appState.banks.forEach(b => {
+                b.cardInvoice.forEach(exp => {
+                    const isRefund = exp.isRefund || (exp.installments && String(exp.installments).includes('+'));
+                    if (isRefund) { meusGastos -= exp.value; faturasBrutas -= exp.value; }
+                    else if (exp.isThirdParty) { terceiros += exp.value; faturasBrutas += exp.value; }
+                    else { meusGastos += exp.value; faturasBrutas += exp.value; }
+                });
+            });
+
+            let disponivel = saldo - meusGastos;
+
+            const applyColor = (el, val, baseClass) => {
+                if (!el) return;
+                if (val < 0) { el.className = baseClass.replace(/text-[a-z]+-[0-9]+/, 'text-red-800'); el.textContent = '- R$ ' + formatMoney(Math.abs(val)); } 
+                else { el.className = baseClass; el.textContent = 'R$ ' + formatMoney(val); }
+            };
+
+            applyColor(document.getElementById('bot-saldo'), saldo, 'text-blue-800 font-bold tracking-tight text-lg whitespace-nowrap');
+            applyColor(document.getElementById('bot-dividas'), dividas, 'text-purple-800 font-bold tracking-tight text-lg whitespace-nowrap');
+            applyColor(document.getElementById('bot-faturas'), faturasBrutas, 'text-red-800 font-bold tracking-tight text-lg whitespace-nowrap');
+            applyColor(document.getElementById('bot-meus-gastos'), meusGastos, 'text-red-800 font-bold tracking-tight text-lg whitespace-nowrap');
+            applyColor(document.getElementById('bot-terceiros'), terceiros, 'text-amber-600 font-bold tracking-tight text-lg whitespace-nowrap');
+            applyColor(document.getElementById('bot-disponivel'), disponivel, 'text-emerald-800 font-bold tracking-tight text-xl whitespace-nowrap');
+
+            const headerSalario = document.getElementById('salario-total-header'); if (headerSalario) headerSalario.textContent = `R$ ${formatMoney(salario)}`;
+
+            applyColor(document.getElementById('kpi-gross'), salario, 'text-2xl font-bold text-emerald-800');
+            applyColor(document.getElementById('kpi-balance'), saldo, 'text-2xl font-bold text-blue-800');
+            applyColor(document.getElementById('kpi-spent'), meusGastos, 'text-2xl font-bold text-red-800');
+            applyColor(document.getElementById('kpi-refunds'), terceiros, 'text-2xl font-bold text-amber-600');
+            applyColor(document.getElementById('kpi-available'), disponivel, 'text-2xl font-bold text-emerald-800');
+        }
+
+        function renderVisaoGeral() {
+            updateBottomBarMetrics();
+            let totalVisaoFaturasCheio = 0; let totalVisaoContas = 0;
+            appState.banks.forEach(b => {
+                totalVisaoContas += b.accountBalance;
+                b.cardInvoice.forEach(exp => {
+                    const isRefund = exp.isRefund || (exp.installments && String(exp.installments).includes('+'));
+                    if (isRefund) totalVisaoFaturasCheio -= exp.value; else totalVisaoFaturasCheio += exp.value;
+                });
+            });
+
+            const elFaturasTotal = document.getElementById('overview-faturas-total'); if (elFaturasTotal) elFaturasTotal.textContent = `R$ ${formatMoney(totalVisaoFaturasCheio)}`;
+            const elContasTotal = document.getElementById('overview-contas-total'); if (elContasTotal) elContasTotal.textContent = `R$ ${formatMoney(totalVisaoContas)}`;
+
+            const faturasList = document.getElementById('overview-faturas-list');
+            if (appState.banks.length === 0) faturasList.innerHTML = '<p class="text-sm text-gray-500 py-4">Sem faturas ativas.</p>';
+            else {
+                faturasList.innerHTML = appState.banks.map(b => {
+                    const c = colorPalette[b.colorIndex] || colorPalette[0]; let bGross = 0; let bThird = 0; let bMeus = 0;
+                    b.cardInvoice.forEach(exp => {
+                        const isRefund = exp.isRefund || (exp.installments && String(exp.installments).includes('+'));
+                        if (isRefund) { bGross -= exp.value; bMeus -= exp.value; } else if (exp.isThirdParty) { bGross += exp.value; bThird += exp.value; } else { bGross += exp.value; bMeus += exp.value; }
+                    });
+                    return `<div class="flex items-center justify-between py-3 px-4 border border-gray-200 rounded-lg bg-white hover:border-slate-300 transition-colors gap-4"><span class="text-sm font-bold text-slate-800 flex items-center gap-2 flex-1 min-w-0"><span class="w-3 h-3 rounded-full shadow-sm shrink-0" style="background-color: ${c.hex}"></span><span class="truncate block">${b.name}</span></span><div class="grid grid-cols-3 gap-4 sm:gap-6 w-full max-w-[280px] shrink-0 mr-2 sm:mr-6"><div class="flex flex-col items-center"><span class="text-[10px] lowercase text-gray-500 font-bold mb-0.5">valor cheio</span><span class="text-sm font-bold text-slate-600 whitespace-nowrap">R$ ${formatMoney(bGross)}</span></div><div class="flex flex-col items-center"><span class="text-[10px] lowercase text-gray-500 font-bold mb-0.5">terceiros</span><span class="text-sm font-bold text-slate-600 whitespace-nowrap">R$ ${formatMoney(bThird)}</span></div><div class="flex flex-col items-center"><span class="text-[10px] lowercase text-gray-500 font-bold mb-0.5">a pagar</span><span class="text-base font-bold text-slate-900 whitespace-nowrap">R$ ${formatMoney(bMeus)}</span></div></div></div>`;
+                }).join('');
+            }
+
+            const leftList = document.getElementById('overview-accounts-list');
+            if (appState.banks.length === 0) leftList.innerHTML = '<p class="text-sm text-gray-500 py-4">Nenhuma conta.</p>';
+            else {
+                leftList.innerHTML = appState.banks.map(b => {
+                    const c = colorPalette[b.colorIndex] || colorPalette[0];
+                    return `<div class="flex items-center justify-between py-3 px-4 border border-gray-200 rounded-lg bg-white hover:border-slate-300 transition-colors gap-6"><span class="text-sm font-bold flex items-center gap-3 text-slate-800 flex-1 min-w-0"><span class="w-3 h-3 rounded-full shadow-sm shrink-0" style="background-color: ${c.hex}"></span><span class="truncate block">${b.name}</span></span><div class="flex flex-col items-center shrink-0 w-24 mr-2 sm:mr-6"><span class="text-[10px] lowercase text-gray-500 font-bold mb-0.5">saldo atual</span><span class="text-base font-bold text-emerald-800 whitespace-nowrap">R$ ${formatMoney(b.accountBalance)}</span></div></div>`;
+                }).join('');
+            }
+
+            const debtsCtn = document.getElementById('overview-debts-list');
+            if (appState.persistentDebts.length === 0) debtsCtn.innerHTML = `<span class="text-sm text-gray-500 py-4">Nenhuma dívida configurada.</span>`;
+            else {
+                debtsCtn.innerHTML = appState.persistentDebts.map(d => {
+                    const isFinished = d.paidInstallments >= d.totalInstallments; const c = colorPalette[d.colorIndex] || colorPalette[2];
+                    return `<div class="flex items-center justify-between py-3 px-4 border border-gray-200 rounded-lg bg-white h-full hover:border-slate-300 transition-colors gap-6 ${isFinished ? 'opacity-40 grayscale' : ''}"><div class="flex flex-col flex-1 min-w-0"><span class="text-sm font-bold text-slate-800 flex items-center gap-3"><span class="w-3 h-3 rounded-full shadow-sm shrink-0" style="background-color: ${c.hex}"></span><span class="truncate block">${d.desc}</span></span><span class="text-xs text-gray-500 font-medium mt-1 ml-6">Parcelas: ${d.paidInstallments}/${d.totalInstallments}</span></div><div class="flex flex-col items-center shrink-0 w-24 mr-2 sm:mr-6"><span class="text-[10px] lowercase text-gray-500 font-bold mb-0.5">valor</span><span class="text-base font-bold text-purple-800 whitespace-nowrap">R$ ${formatMoney(d.installmentValue)}</span></div></div>`;
+                }).join('');
+            }
+        }
+
+        function renderFatura() {
+            const banksCtn = document.getElementById('invoice-banks-container');
+            if (appState.banks.length === 0) { banksCtn.innerHTML = `<div class="p-12 text-center text-gray-500 text-lg border-2 border-dashed border-gray-200 rounded-2xl">Nenhum cartão cadastrado.</div>`; return; }
+
+            banksCtn.innerHTML = appState.banks.map(bank => {
+                const c = colorPalette[bank.colorIndex] || colorPalette[0]; let bGross = 0; let bMeus = 0; let bThird = 0;
+                bank.cardInvoice.forEach(exp => {
+                    const isRefund = exp.isRefund || (exp.installments && String(exp.installments).includes('+'));
+                    if (isRefund) { bGross -= exp.value; bMeus -= exp.value; } else if (exp.isThirdParty) { bThird += exp.value; bGross += exp.value; } else { bMeus += exp.value; bGross += exp.value; }
+                });
+
+                const rows = bank.cardInvoice.map((exp, index) => {
+                    const isRefund = exp.isRefund || (exp.installments && String(exp.installments).includes('+'));
+                    let rClass = isRefund ? 'bg-emerald-500/[0.15] border-emerald-200/50' : (exp.isThirdParty ? 'bg-amber-500/[0.15] border-amber-200/50' : (index % 2 === 0 ? 'bg-transparent' : 'bg-slate-50 border-gray-100'));
+                    let catColorHex = 'transparent'; let catName = 'Sem categoria (clique no lápis e selecione)'; let catHasColor = false;
+                    
+                    if (exp.categoryId) {
+                        const cat = appState.categories.find(c => c.id === exp.categoryId);
+                        if (cat && colorPalette[cat.colorIndex]) { catColorHex = colorPalette[cat.colorIndex].hex; catName = `Categoria: ${cat.name}`; catHasColor = true; } else { delete exp.categoryId; }
+                    }
+
+                    const dotHtml = catHasColor ? `<div class="w-[1.5rem] h-[1.5rem] rounded-full mx-auto shadow-sm cursor-help transition-transform hover:scale-110" style="background-color: ${catColorHex}" title="${catName}"></div>` : `<div class="w-[1.5rem] h-[1.5rem] rounded-full mx-auto border-2 border-dashed border-gray-300 cursor-help opacity-40 hover:opacity-100 transition-all flex items-center justify-center text-gray-400" title="${catName}"></div>`;
+
+                    return `
+                    <tr id="row-${exp.id}" class="row-base ${rClass} transition-colors duration-200 text-sm" oncontextmenu="openActionMenu(event, '${bank.id}', '${exp.id}', ${isRefund}, 'right-click')">
+                        <td class="pl-6 py-2 w-[8%] text-center align-middle">${dotHtml}</td>
+                        <td class="px-2 py-2 w-[12%] text-center"><input type="text" value="${exp.date || ''}" onblur="updateInvoiceExp('${bank.id}', '${exp.id}', 'date', this.value)" placeholder="dd/mm" class="input-clean text-center font-mono text-xs w-full"></td>
+                        <td class="px-2 py-2 w-[30%] text-center"><input type="text" value="${exp.desc}" onblur="updateInvoiceExp('${bank.id}', '${exp.id}', 'desc', this.value)" placeholder="nome da compra..." class="input-clean text-center w-full"></td>
+                        <td class="px-2 py-2 w-[10%] text-center"><input type="text" value="${exp.installments || ''}" onblur="updateInvoiceExp('${bank.id}', '${exp.id}', 'installments', this.value)" placeholder="1x" class="input-clean text-center font-bold opacity-60 hover:opacity-100 focus:opacity-100 transition-opacity w-full"></td>
+                        <td class="px-4 py-2 w-[20%] text-center"><input type="text" value="${formatMoney(exp.value)}" onblur="updateInvoiceExp('${bank.id}', '${exp.id}', 'value', this.value)" oninput="formatCurrencyInput(this)" placeholder="0,00" class="input-clean text-center font-bold text-base text-slate-900 mx-auto w-[120px] max-w-[120px]"></td>
+                        <td class="pr-6 pl-4 py-2 w-[15%]"><div class="flex items-center justify-center h-full w-full"><input type="checkbox" ${exp.isThirdParty ? 'checked' : ''} onchange="updateInvoiceExp('${bank.id}', '${exp.id}', 'isThirdParty', this.checked)" class="custom-checkbox mx-auto" ${isRefund ? 'disabled' : ''} title="Marcar como Terceiros"></div></td>
+                        <td class="pr-8 py-2 w-[5%] text-right opacity-0 hover:opacity-100 transition-opacity"><button onclick="openActionMenu(event, '${bank.id}', '${exp.id}', ${isRefund}, 'pencil')" class="text-gray-400 hover:text-slate-700 p-1.5 rounded-lg hover:bg-slate-200/50 transition-colors"><svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z"></path></svg></button></td>
+                    </tr>`;
+                }).join('');
+
+                return `
+                <div class="bg-white rounded-xl border border-gray-200 hover-subtle flex flex-col overflow-hidden shadow-sm">
+                    <div class="px-8 py-6 flex flex-col md:flex-row justify-between md:items-center border-b border-gray-200" style="border-top: 6px solid ${c.hex}">
+                        <span class="font-bold text-xl uppercase tracking-widest text-slate-800 mb-4 md:mb-0 flex items-center gap-3"><span class="w-4 h-4 rounded-full shadow-sm shrink-0" style="background-color: ${c.hex}"></span>${bank.name}</span>
+                        <div class="flex-1 flex justify-end mr-4 sm:mr-10">
+                            <div class="grid grid-cols-3 gap-4 sm:gap-10 w-full max-w-[400px]">
+                                <div class="flex flex-col items-center"><span class="text-[10px] lowercase text-gray-500 font-bold mb-1">valor cheio</span><span class="text-base font-medium text-slate-600 whitespace-nowrap">R$ ${formatMoney(bGross)}</span></div>
+                                <div class="flex flex-col items-center"><span class="text-[10px] lowercase text-gray-500 font-bold mb-1">terceiros</span><span class="text-base font-medium text-slate-600 whitespace-nowrap">R$ ${formatMoney(bThird)}</span></div>
+                                <div class="flex flex-col items-center"><span class="text-[10px] lowercase text-gray-500 font-bold mb-1">a pagar</span><span class="text-xl font-bold text-slate-900 whitespace-nowrap">R$ ${formatMoney(bMeus)}</span></div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="overflow-x-auto">
+                        <table class="w-full text-left border-collapse min-w-[800px] table-fixed">
+                            <thead class="bg-white border-b border-gray-200"><tr class="text-xs text-gray-400 font-bold lowercase tracking-wider"><th class="pl-6 py-3 w-[8%] text-center">cat</th><th class="px-2 py-3 w-[12%] text-center">data</th><th class="px-2 py-3 w-[30%] text-center">nome da compra</th><th class="px-2 py-3 w-[10%] text-center">desc</th><th class="px-4 py-3 w-[20%] text-center">valor</th><th class="pr-6 pl-4 py-3 w-[15%] text-center">terceiros</th><th class="pr-8 py-3 w-[5%]"></th></tr></thead>
+                            <tbody id="tbody-${bank.id}">${rows}</tbody>
+                        </table>
+                    </div>
+                    <div class="p-4 bg-gray-50 border-t border-gray-100 flex justify-center"><button onclick="addInlineExpense('${bank.id}')" class="px-8 py-2.5 text-sm font-bold lowercase tracking-widest bg-white border border-gray-200 text-slate-600 rounded-lg hover:border-slate-300 hover:bg-white transition-colors duration-200 active:scale-95 shadow">+ adicionar gasto</button></div>
+                </div>`;
+            }).join('');
+        }
+
+        window.addInlineExpense = function (bankId) {
+            const bank = appState.banks.find(b => b.id === bankId);
+            if (bank) { bank.cardInvoice.push({ id: 'exp_' + Date.now(), categoryId: null, date: '', desc: '', installments: '', value: 0, isThirdParty: false, isRefund: false }); saveState(); setTimeout(() => { const tbody = document.getElementById(`tbody-${bankId}`); if (tbody) { const inputs = tbody.querySelectorAll('tr:last-child input[type="text"]'); if (inputs.length > 0) inputs[0].focus(); } }, 50); }
+        }
+
+        window.updateInvoiceExp = function (bankId, expId, field, val) { const bank = appState.banks.find(b => b.id === bankId); if (!bank) return; const exp = bank.cardInvoice.find(e => e.id === expId); if (!exp) return; if (field === 'value') exp.value = parseMoney(val); else exp[field] = val; saveState(); }
+        window.deleteInvoiceExp = function (bankId, expId) { const bank = appState.banks.find(b => b.id === bankId); if (bank) { bank.cardInvoice = bank.cardInvoice.filter(e => e.id !== expId); saveState(); } }
+
+        /* LÓGICA DE CATEGORIAS */
+        window.openManageCategories = function () {
+            const listHtml = appState.categories.map(c => {
+                const color = colorPalette[c.colorIndex] || colorPalette[0];
+                return `<div class="flex justify-between items-center p-3 border border-gray-200 rounded-lg bg-gray-50 mb-2 hover:bg-white hover:border-slate-300 transition-colors"><div class="flex items-center gap-3"><div class="w-5 h-5 rounded-full shadow-sm" style="background-color: ${color.hex}"></div><span class="font-bold text-sm text-slate-800">${c.name}</span></div><div class="flex items-center gap-1"><button onclick="editCategory('${c.id}')" class="text-gray-400 hover:text-blue-600 p-1.5 rounded transition-colors"><svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z"></path></svg></button><button onclick="deleteCategory('${c.id}')" class="text-gray-400 hover:text-red-600 p-1.5 rounded transition-colors"><svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path></svg></button></div></div>`;
+            }).join('');
+
+            const colorsHtml = colorPalette.map((c, i) => `<div onclick="document.getElementById('new-cat-col').value = ${i}; document.querySelectorAll('.cat-col-pick').forEach(el=>el.classList.remove('ring-4', 'ring-slate-300', 'border-white')); this.classList.add('ring-4', 'ring-slate-300', 'border-white');" class="cat-col-pick w-8 h-8 rounded-full cursor-pointer border-2 border-transparent transition-transform duration-200 shrink-0 shadow-sm ${i === 0 ? 'ring-4 ring-slate-300 border-white' : ''}" style="background-color: ${c.hex}"></div>`).join('');
+
+            openModal(`
+                <h3 class="text-2xl font-bold mb-6 text-slate-800 lowercase">gerenciar categorias</h3>
+                <div class="flex flex-col gap-6">
+                    <div class="max-h-56 overflow-y-auto pr-2">${listHtml || '<p class="text-sm text-gray-500 text-center py-4 border border-dashed border-gray-200 rounded-lg">Nenhuma categoria criada.</p>'}</div>
+                    <form onsubmit="handleCategorySubmit(event)" class="border-t border-gray-100 pt-5 space-y-5">
+                        <h4 class="font-bold text-xs text-slate-500 uppercase tracking-widest">nova categoria</h4>
+                        <div class="flex flex-col gap-4">
+                            <div><label class="text-xs lowercase font-bold text-gray-500 pl-1 block mb-2">nome da categoria</label><input type="text" id="new-cat-name" required placeholder="Ex: Lazer, Mercado..." class="input-field py-3 text-sm"></div>
+                            <div><label class="text-xs lowercase font-bold text-gray-500 pl-1 block mb-2">cor de destaque</label><div class="flex flex-wrap gap-2 py-1">${colorsHtml}</div><input type="hidden" id="new-cat-col" value="0"></div>
+                        </div>
+                        <div class="flex justify-end gap-3 pt-4 border-t border-gray-100 mt-2"><button type="button" onclick="closeModal()" class="px-5 py-2 text-sm lowercase font-bold text-gray-500 hover:text-slate-800 transition-colors">fechar</button><button type="submit" class="px-6 py-2 text-sm lowercase font-bold bg-slate-800 text-white rounded-lg hover:bg-slate-900 shadow-md transition-colors btn-interactive">adicionar</button></div>
+                    </form>
+                </div>
+            `);
+        }
+
+        window.editCategory = function (id) {
+            const cat = appState.categories.find(c => c.id === id); if (!cat) return;
+            openManageCategories(); document.getElementById('new-cat-name').value = cat.name; document.getElementById('new-cat-col').value = cat.colorIndex;
+            const form = document.querySelector('form'); let hiddenId = document.getElementById('edit-cat-id');
+            if (!hiddenId) { hiddenId = document.createElement('input'); hiddenId.type = 'hidden'; hiddenId.id = 'edit-cat-id'; form.appendChild(hiddenId); }
+            hiddenId.value = id;
+        };
+
+        window.handleCategorySubmit = function (e) {
+            e.preventDefault(); const name = document.getElementById('new-cat-name').value; const colorIndex = parseInt(document.getElementById('new-cat-col').value); const editId = document.getElementById('edit-cat-id')?.value;
+            if (editId) { const index = appState.categories.findIndex(c => c.id === editId); if (index !== -1) { appState.categories[index] = { ...appState.categories[index], name: name, colorIndex: colorIndex }; } document.getElementById('edit-cat-id').remove(); } 
+            else { appState.categories.push({ id: 'cat_' + Date.now(), name, colorIndex }); }
+            saveState(); openManageCategories();
+        };
+
+        window.deleteCategory = function (id) {
+            if (confirm('Apagar esta categoria? As compras atreladas a ela ficarão sem categoria.')) {
+                appState.categories = appState.categories.filter(c => c.id !== id);
+                appState.banks.forEach(b => { b.cardInvoice.forEach(exp => { if (exp.categoryId === id) delete exp.categoryId; }); });
+                saveState(); openManageCategories();
+            }
+        }
+
+        window.openCategoryPicker = function (bankId, expId) {
+            const bank = appState.banks.find(b => b.id === bankId); if (!bank) return;
+            const exp = bank.cardInvoice.find(e => e.id === expId); if (!exp) return;
+            const listHtml = appState.categories.map(c => {
+                const color = colorPalette[c.colorIndex] || colorPalette[0]; const isSelected = exp.categoryId === c.id;
+                return `<button onclick="setExpenseCategory('${bankId}', '${expId}', '${c.id}')" class="w-full flex items-center gap-3 p-3 mb-2 border ${isSelected ? 'border-slate-800 bg-slate-50 ring-1 ring-slate-800' : 'border-gray-200 hover:bg-gray-50'} rounded-lg transition-all text-left"><div class="w-5 h-5 rounded-full shadow-sm shrink-0" style="background-color: ${color.hex}"></div><span class="font-bold text-sm text-slate-800 flex-1">${c.name}</span>${isSelected ? '<svg class="w-5 h-5 text-slate-800" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg>' : ''}</button>`;
+            }).join('');
+            openModal(`
+                <h3 class="text-xl font-bold mb-4 text-slate-800 tracking-tight lowercase">selecionar categoria</h3>
+                <p class="text-sm text-gray-500 mb-6 font-medium">Atribuindo categoria para: <br><strong class="text-slate-800 text-base mt-1 block">"${exp.desc || 'compra sem nome'}"</strong></p>
+                <div class="max-h-60 overflow-y-auto pr-2 mb-6">${listHtml || '<p class="text-sm text-gray-500 text-center py-6 border border-dashed border-gray-200 rounded-lg">Nenhuma categoria disponível.</p>'}</div>
+                <div class="flex justify-between border-t border-gray-100 pt-6"><button onclick="setExpenseCategory('${bankId}', '${expId}', null)" class="px-4 py-2 text-sm lowercase font-bold text-red-600 hover:bg-red-50 rounded-lg transition-colors">remover categoria</button><button onclick="closeModal()" class="px-5 py-2 text-sm lowercase font-bold text-gray-500 hover:text-slate-800 transition-colors">cancelar</button></div>
+            `);
+        }
+
+        window.setExpenseCategory = function (bankId, expId, catId) {
+            const bank = appState.banks.find(b => b.id === bankId);
+            if (bank) { const exp = bank.cardInvoice.find(e => e.id === expId); if (exp) { if (catId) exp.categoryId = catId; else delete exp.categoryId; saveState(); closeModal(); } }
+        }
+
+        /* REORDER LOGIC */
+        window.activeReorder = null;
+        window.startReorderMode = function (bankId, expId) {
+            const tbody = document.getElementById(`tbody-${bankId}`); const row = document.getElementById(`row-${expId}`); if (!tbody || !row) return;
+            window.activeReorder = { bankId, expId, row, justStarted: true }; row.classList.add('reorder-active');
+            window.reorderMouseMove = function (e) {
+                const targetRow = e.target.closest('tr');
+                if (targetRow && targetRow !== row && targetRow.parentElement === tbody) {
+                    const rect = targetRow.getBoundingClientRect(); const midY = rect.top + rect.height / 2;
+                    if (e.clientY < midY) tbody.insertBefore(row, targetRow); else tbody.insertBefore(row, targetRow.nextSibling);
+                }
+            };
+            window.reorderClick = function (e) {
+                if (window.activeReorder.justStarted) { window.activeReorder.justStarted = false; return; }
+                e.stopPropagation(); e.preventDefault(); document.removeEventListener('mousemove', window.reorderMouseMove); document.removeEventListener('click', window.reorderClick, true);
+                row.classList.remove('reorder-active'); const bank = appState.banks.find(b => b.id === bankId);
+                if (bank) { const newOrderIds = Array.from(tbody.querySelectorAll('tr')).map(tr => tr.id.replace('row-', '')); const newCardInvoice = []; newOrderIds.forEach(id => { const exp = bank.cardInvoice.find(e => e.id === id); if (exp) newCardInvoice.push(exp); }); bank.cardInvoice = newCardInvoice; saveState(); }
+                window.activeReorder = null;
+            };
+            document.addEventListener('mousemove', window.reorderMouseMove); document.addEventListener('click', window.reorderClick, true);
+        }
+
+        /* CONTEXT MENU */
+        window.openActionMenu = function (e, bankId, expId, isRefund, source) {
+            if (e.target.tagName === 'INPUT') return; e.preventDefault(); e.stopPropagation();
+            const menu = document.getElementById('action-menu'); const btnCat = document.getElementById('ctx-btn-category'); const btnMove = document.getElementById('ctx-btn-move'); const btnRefund = document.getElementById('ctx-btn-refund'); const btnDelete = document.getElementById('ctx-btn-delete'); const btnRefundText = document.getElementById('ctx-refund-text');
+            btnRefundText.textContent = isRefund ? 'remover reembolso' : 'reembolso';
+            if (source === 'right-click') { btnCat.style.display = 'none'; btnMove.style.display = 'flex'; btnRefund.style.display = 'none'; btnDelete.style.display = 'none'; } 
+            else if (source === 'pencil') { btnCat.style.display = 'flex'; btnMove.style.display = 'none'; btnRefund.style.display = 'flex'; btnDelete.style.display = 'flex'; }
+            btnCat.onclick = () => { window.openCategoryPicker(bankId, expId); window.hideActionMenu(); }; btnMove.onclick = () => { window.startReorderMode(bankId, expId); window.hideActionMenu(); }; btnRefund.onclick = () => { window.toggleRefund(bankId, expId); window.hideActionMenu(); }; btnDelete.onclick = () => { deleteInvoiceExp(bankId, expId); window.hideActionMenu(); };
+            menu.classList.remove('hidden'); let x = e.clientX; let y = e.clientY; const mw = 192; const mh = source === 'pencil' ? 200 : 50; if (x + mw > window.innerWidth) x = window.innerWidth - mw - 10; if (y + mh > window.innerHeight) y = window.innerHeight - mh - 10; menu.style.left = `${x}px`; menu.style.top = `${y}px`; setTimeout(() => { menu.classList.remove('scale-95', 'opacity-0'); menu.classList.add('scale-100', 'opacity-100'); }, 10);
+        };
+        window.hideActionMenu = function () { const menu = document.getElementById('action-menu'); if (menu && !menu.classList.contains('hidden')) { menu.classList.remove('scale-100', 'opacity-100'); menu.classList.add('scale-95', 'opacity-0'); setTimeout(() => menu.classList.add('hidden'), 200); } };
+        window.toggleRefund = function (bankId, expId) { const bank = appState.banks.find(b => b.id === bankId); if (!bank) return; const exp = bank.cardInvoice.find(e => e.id === expId); if (!exp) return; const wasRefund = exp.isRefund || (exp.installments && String(exp.installments).includes('+')); if (exp.installments && String(exp.installments).includes('+')) exp.installments = String(exp.installments).replace('+', ''); exp.isRefund = !wasRefund; if (exp.isRefund) exp.isThirdParty = false; saveState(); }
+
+        /* MODAIS RESTANTES */
+        function openModal(htmlContent) {
+            const container = document.getElementById('modal-container'); const content = document.getElementById('modal-content'); content.innerHTML = htmlContent; container.classList.remove('hidden'); setTimeout(() => { container.classList.remove('opacity-0', 'pointer-events-none'); content.classList.remove('scale-95'); content.classList.add('scale-100'); }, 10);
+        }
+        window.closeModal = function () { const container = document.getElementById('modal-container'); container.classList.add('hidden'); container.classList.add('opacity-0'); container.classList.add('pointer-events-none'); }
+        
+        window.openBankModal = function (editId = null) {
+            const b = (typeof editId === 'string') ? appState.banks.find(x => x.id === editId) : null;
+            const colorsHtml = colorPalette.map((c, i) => `<div onclick="document.getElementById('bnk-col').value = ${i}; document.querySelectorAll('.col-pick').forEach(el=>el.classList.remove('ring-4', 'ring-slate-300', 'border-white')); this.classList.add('ring-4', 'ring-slate-300', 'border-white');" class="col-pick w-10 h-10 rounded-full cursor-pointer border-2 border-transparent transition-transform duration-200 shrink-0 shadow-sm ${b && b.colorIndex === i ? 'ring-4 ring-slate-300 border-white' : (!b && i === 0 ? 'ring-4 ring-slate-300 border-white' : '')}" style="background-color: ${c.hex}"></div>`).join('');
+            openModal(`<h3 class="text-2xl font-bold mb-6 text-slate-800 lowercase">${b ? 'editar conta' : 'nova conta bancária'}</h3><form onsubmit="handleBankSubmit(event)" class="space-y-6"><input type="hidden" id="bank-edit-id" value="${b ? b.id : ''}"><div><label class="text-xs lowercase font-bold text-gray-500 pl-1 block mb-2">nome da instituição</label><input type="text" id="bnk-name" required placeholder="Ex: Nubank, Itaú..." value="${b ? b.name : ''}" class="input-field text-base"></div><div><label class="text-xs lowercase font-bold text-gray-500 pl-1 block mb-3">cor de destaque</label><div class="flex flex-wrap gap-4 py-2 px-1">${colorsHtml}</div><input type="hidden" id="bnk-col" value="${b ? b.colorIndex : 0}"></div><div><label class="text-xs lowercase font-bold text-gray-500 pl-1 block mb-2">saldo líquido atual</label><input type="text" id="bnk-bal" placeholder="0,00" value="${b ? formatMoney(b.accountBalance) : ''}" oninput="formatCurrencyInput(this)" class="input-field text-lg text-slate-900 font-bold"></div><div class="flex justify-end gap-4 pt-6 border-t border-gray-100 mt-8"><button type="button" onclick="closeModal()" class="px-6 py-3 text-sm lowercase font-bold text-gray-500 hover:text-slate-800 transition-colors">cancelar</button><button type="submit" class="px-8 py-3 text-sm lowercase font-bold bg-slate-800 text-white rounded-lg hover:bg-slate-900 shadow-md transition-colors btn-interactive">salvar</button></div></form>`);
+        }
+
+        window.handleBankSubmit = function (e) {
+            e.preventDefault(); const id = document.getElementById('bank-edit-id').value;
+            const data = { name: document.getElementById('bnk-name').value, colorIndex: parseInt(document.getElementById('bnk-col').value), accountBalance: parseMoney(document.getElementById('bnk-bal').value), isManual: true };
+            if (id) { const b = appState.banks.find(x => x.id === id); if (b) Object.assign(b, data); } else { data.id = 'bnk_' + Date.now(); data.cardInvoice = []; appState.banks.push(data); } closeModal(); saveState();
+        }
+
+        window.openDebtModal = function (editId = null) {
+            const d = (typeof editId === 'string') ? appState.persistentDebts.find(x => x.id === editId) : null;
+            const colorsHtml = colorPalette.map((c, i) => `<div onclick="document.getElementById('pdt-col').value = ${i}; document.querySelectorAll('.col-pick').forEach(el=>el.classList.remove('ring-4', 'ring-slate-300', 'border-white')); this.classList.add('ring-4', 'ring-slate-300', 'border-white');" class="col-pick w-10 h-10 rounded-full cursor-pointer border-2 border-transparent transition-transform duration-200 shrink-0 shadow-sm ${d && d.colorIndex === i ? 'ring-4 ring-slate-300 border-white' : (!d && i === 2 ? 'ring-4 ring-slate-300 border-white' : '')}" style="background-color: ${c.hex}"></div>`).join('');
+            openModal(`<h3 class="text-2xl font-bold mb-6 text-slate-800 lowercase">${d ? 'editar dívida' : 'registrar dívida'}</h3><form onsubmit="handleDebtSubmit(event)" class="space-y-6"><input type="hidden" id="pdt-edit-id" value="${d ? d.id : ''}"><div><label class="text-xs lowercase font-bold text-gray-500 pl-1 block mb-2">descrição</label><input type="text" id="pdt-desc" required placeholder="Ex: Financiamento Veículo" value="${d ? d.desc : ''}" class="input-field text-base"></div><div><label class="text-xs lowercase font-bold text-gray-500 pl-1 block mb-3">cor de destaque</label><div class="flex flex-wrap gap-4 py-2 px-1">${colorsHtml}</div><input type="hidden" id="pdt-col" value="${d ? d.colorIndex : 2}"></div><div class="flex flex-col sm:flex-row gap-6 w-full"><div class="flex-1 min-w-[150px]"><label class="text-xs lowercase font-bold text-gray-500 pl-1 block mb-2">valor da parcela</label><input type="text" id="pdt-val" required placeholder="R$ 0,00" value="${d ? formatMoney(d.installmentValue) : ''}" oninput="formatCurrencyInput(this)" class="input-field text-lg text-slate-900 font-bold w-full"></div><div class="flex-1 min-w-[120px]"><label class="text-xs lowercase font-bold text-gray-500 pl-1 block mb-2">nº de parcelas</label><input type="number" id="pdt-inst" required min="1" placeholder="Ex: 48" value="${d ? d.totalInstallments : ''}" class="input-field text-lg font-bold text-slate-700 w-full"></div></div><div class="flex justify-end gap-4 pt-6 border-t border-gray-100 mt-8"><button type="button" onclick="closeModal()" class="px-6 py-3 text-sm lowercase font-bold text-gray-500 hover:text-slate-800 transition-colors">cancelar</button><button type="submit" class="px-8 py-3 text-sm lowercase font-bold bg-slate-800 text-white rounded-lg hover:bg-slate-900 shadow-md transition-colors btn-interactive">salvar</button></div></form>`);
+        }
+
+        window.handleDebtSubmit = function (e) {
+            e.preventDefault(); const id = document.getElementById('pdt-edit-id').value;
+            const data = { desc: document.getElementById('pdt-desc').value, installmentValue: parseMoney(document.getElementById('pdt-val').value), totalInstallments: parseInt(document.getElementById('pdt-inst').value), colorIndex: parseInt(document.getElementById('pdt-col').value) };
+            if (id) { const d = appState.persistentDebts.find(x => x.id === id); if (d) Object.assign(d, data); } else { data.id = 'pdt_' + Date.now(); data.paidInstallments = 0; data.selectedForCurrentCycle = true; appState.persistentDebts.push(data); } closeModal(); saveState();
+        }
+
+        function renderSalario() {
+            const tbody = document.getElementById('income-table-body');
+            if (appState.incomes.length === 0) { tbody.innerHTML = `<tr><td colspan="3" class="p-10 text-center text-sm text-gray-500 border border-dashed border-gray-200 m-4 rounded-xl">Nenhuma receita registrada.</td></tr>`; return; }
+            tbody.innerHTML = appState.incomes.map((inc, index) => { let baseBg = index % 2 === 0 ? 'bg-transparent' : 'bg-slate-50/70'; return `<tr class="border-b border-gray-100 transition-colors duration-200 group text-sm ${baseBg}"><td class="pl-8 py-3 w-[60%]"><input type="text" value="${inc.desc}" onblur="updateIncome('${inc.id}', 'desc', this.value)" placeholder="Digite a origem da renda..." class="input-clean w-full"></td><td class="px-6 py-3 w-[30%] text-right"><input type="text" value="${formatMoney(inc.value)}" onblur="updateIncome('${inc.id}', 'value', this.value)" oninput="formatCurrencyInput(this)" placeholder="0,00" class="input-clean text-right font-bold text-lg text-slate-900 w-full"></td><td class="pr-8 py-3 w-[10%] text-center opacity-0 group-hover:opacity-100 transition-opacity"><button onclick="deleteIncome('${inc.id}')" class="text-gray-400 hover:text-red-500 p-2 rounded-lg hover:bg-red-50 transition-colors"><svg class="w-5 h-5 mx-auto" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path></svg></button></td></tr>` }).join('');
+        }
+        window.addIncomeRow = function () { appState.incomes.push({ id: 'inc_' + Date.now(), desc: '', value: 0 }); saveState(); setTimeout(() => { const tbody = document.getElementById('income-table-body'); const inputs = tbody.querySelectorAll('tr:last-child input[type="text"]'); if (inputs.length > 0) inputs[0].focus(); }, 50); }
+        window.deleteIncome = function (id) { appState.incomes = appState.incomes.filter(x => x.id !== id); saveState(); }
+        window.updateIncome = function (id, field, val) { const e = appState.incomes.find(x => x.id === id); if (!e) return; if (field === 'value') e.value = parseMoney(val); else e[field] = val; saveState(); }
+
+        function renderConexaoBancaria() {
+            const banksGrid = document.getElementById('banking-accounts-grid');
+            if (appState.banks.length === 0) banksGrid.innerHTML = `<p class="text-sm text-gray-500 col-span-full border-2 border-dashed border-gray-200 p-8 rounded-xl text-center">Nenhuma conta vinculada.</p>`;
+            else { banksGrid.innerHTML = appState.banks.map(b => { const c = colorPalette[b.colorIndex] || colorPalette[0]; return `<div class="bg-white border border-gray-200 rounded-xl p-6 flex flex-col justify-between hover-subtle shadow-sm" style="border-top-width: 6px; border-top-color: ${c.hex}"><div class="flex justify-between items-start mb-6"><h4 class="font-bold text-lg uppercase tracking-wider text-slate-800">${b.name}</h4><div class="flex gap-2 opacity-30 hover:opacity-100 transition-opacity"><button onclick="openBankModal('${b.id}')" class="p-2 hover:bg-slate-100 rounded-md hover:text-slate-800 transition-colors"><svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z"></path></svg></button><button onclick="deleteBank('${b.id}')" class="p-2 hover:bg-red-50 rounded-md hover:text-red-600 transition-colors"><svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path></svg></button></div></div><div class="bg-gray-50 rounded-lg p-4 flex justify-between items-center border border-gray-100 shadow-inner"><span class="text-xs uppercase font-bold text-gray-500">Saldo Líquido</span><span class="text-xl font-bold text-slate-900">R$ ${formatMoney(b.accountBalance)}</span></div></div>`; }).join(''); }
+            const debtsGrid = document.getElementById('banking-debts-grid');
+            if (appState.persistentDebts.length === 0) debtsGrid.innerHTML = `<p class="text-sm text-gray-500 col-span-full border-2 border-dashed border-gray-200 p-8 rounded-xl text-center">Nenhuma dívida configurada.</p>`;
+            else { debtsGrid.innerHTML = appState.persistentDebts.map(d => { const isFinished = d.paidInstallments >= d.totalInstallments; const c = colorPalette[d.colorIndex] || colorPalette[2]; return `<div class="bg-white border border-gray-200 rounded-xl p-6 border-l-[6px] hover-subtle shadow-sm ${isFinished ? 'opacity-50 grayscale hover:grayscale-0 transition-all' : ''}" style="border-left-color: ${c.hex}"><div class="flex justify-between items-start mb-6"><div class="flex flex-col"><h4 class="font-bold text-lg uppercase pr-2 text-slate-800">${d.desc}</h4><label class="flex items-center gap-3 mt-3 cursor-pointer select-none"><input type="checkbox" class="custom-checkbox" onchange="toggleDebtSelection('${d.id}')" ${d.selectedForCurrentCycle ? 'checked' : ''} ${isFinished ? 'disabled' : ''}><span class="text-sm text-gray-500 font-bold lowercase">reduzir do saldo</span></label></div><div class="flex gap-2 opacity-30 hover:opacity-100 transition-opacity"><button onclick="openDebtModal('${d.id}')" class="p-2 hover:bg-slate-100 rounded-md hover:text-slate-800 transition-colors"><svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z"></path></svg></button><button onclick="deletePersistentDebt('${d.id}')" class="p-2 text-gray-300 hover:text-red-600 hover:bg-red-50 rounded-md transition-colors"><svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path></svg></button></div></div><div class="bg-gray-50 rounded-lg p-4 flex justify-between items-center border border-gray-100 shadow-inner"><span class="text-xl font-bold text-slate-900">R$ ${formatMoney(d.installmentValue)}</span><div class="flex items-center gap-4"><button onclick="adjustDebtPaid('${d.id}', -1)" class="w-10 h-10 flex items-center justify-center rounded-full bg-white border border-gray-200 text-gray-500 hover:bg-gray-100 text-xl font-medium shadow-sm transition-transform active:scale-90" ${d.paidInstallments <= 0 ? 'disabled' : ''}>-</button><span class="text-base font-bold w-16 text-center text-slate-700">${d.paidInstallments} / ${d.totalInstallments}</span><button onclick="adjustDebtPaid('${d.id}', 1)" class="w-10 h-10 flex items-center justify-center rounded-full bg-white border border-gray-200 text-slate-800 font-bold hover:bg-slate-200 text-xl shadow-sm transition-transform active:scale-90" ${isFinished ? 'disabled' : ''}>+</button></div></div></div>`; }).join(''); }
+        }
+        window.toggleDebtSelection = function (id) { const d = appState.persistentDebts.find(x => x.id === id); if (d) { d.selectedForCurrentCycle = !d.selectedForCurrentCycle; saveState(); } }
+        window.adjustDebtPaid = function (id, amt) { const d = appState.persistentDebts.find(x => x.id === id); if (d) { d.paidInstallments += amt; if (d.paidInstallments < 0) d.paidInstallments = 0; if (d.paidInstallments > d.totalInstallments) d.paidInstallments = d.totalInstallments; saveState(); } }
+        window.deleteBank = function (id) { if (confirm('Apagar banco e remover gastos atrelados? Esta ação não pode ser desfeita.')) { appState.banks = appState.banks.filter(x => x.id !== id); saveState(); } }
+        window.deletePersistentDebt = function (id) { if (confirm('Excluir dívida permanentemente?')) { appState.persistentDebts = appState.persistentDebts.filter(x => x.id !== id); saveState(); } }
+
+        function setupDOMListeners() {
+            document.getElementById('import-file').addEventListener('change', (e) => {
+                const r = new FileReader();
+                r.onload = ev => { try { const data = JSON.parse(ev.target.result); appState = { ...appState, ...data }; saveState(); location.reload(); } catch (err) { alert('Erro ao importar JSON.'); } };
+                r.readAsText(e.target.files[0]);
+            });
+            document.addEventListener('click', () => { if (typeof window.hideActionMenu === 'function') window.hideActionMenu(); });
+            document.addEventListener('scroll', () => { if (typeof window.hideActionMenu === 'function') window.hideActionMenu(); }, true);
+        }
+
+        window.exportState = function () {
+            const now = new Date();
+            const pad = (n) => n.toString().padStart(2, '0');
+            
+            const day = pad(now.getDate());
+            const month = pad(now.getMonth() + 1);
+            const year = now.getFullYear();
+            const hour = pad(now.getHours());
+            const minute = pad(now.getMinutes());
+            
+            const fileName = `Fatura(${day}.${month}.${year})(${hour}-${minute}).json`;
+            
+            const a = document.createElement('a');
+            a.href = URL.createObjectURL(new Blob([JSON.stringify(appState, null, 2)], { type: "application/json" }));
+            a.download = fileName;
+            a.click();
+        }
+
+        function formatCurrencyInput(i) { let v = i.value.replace(/\D/g, ""); v = (parseInt(v || 0) / 100).toFixed(2) + ""; i.value = v.replace('.', ',').replace(/\B(?=(\d{3})+(?!\d))/g, "."); }
+        function parseMoney(s) { if (typeof s === 'number') return s; return parseFloat((s || '0').replace(/\./g, '').replace(',', '.')) || 0; }
+        function formatMoney(v) { return (v || 0).toLocaleString('pt-BR', { minimumFractionDigits: 2, maximumFractionDigits: 2 }); }
+    </script>
+</body>
+</html>
