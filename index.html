@@ -23,14 +23,17 @@
             }
         }
     </script>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@500;700&display=swap" rel="stylesheet">
+    <link
+        href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@500;700&display=swap"
+        rel="stylesheet">
     <style>
         @tailwind base;
         @tailwind components;
         @tailwind utilities;
 
-        html, body { 
-            scrollbar-gutter: stable; 
+        html,
+        body {
+            scrollbar-gutter: stable;
         }
 
         @layer components {
@@ -42,56 +45,243 @@
                 will-change: transform;
             }
 
-            .nav-link:hover { @apply text-slate-700; transform: translateY(-3px) translateZ(0); }
-            .nav-active { @apply text-slate-900 font-bold !important; transform: translateY(0) translateZ(0) !important; }
+            .nav-link:hover {
+                @apply text-slate-700;
+                transform: translateY(-3px) translateZ(0);
+            }
+
+            .nav-active {
+                @apply text-slate-900 font-bold !important;
+                transform: translateY(0) translateZ(0) !important;
+            }
+
             .nav-active::after {
-                content: ''; 
-                position: absolute; 
-                bottom: -2px; 
-                left: 0; 
-                width: 100%; 
+                content: '';
+                position: absolute;
+                bottom: -2px;
+                left: 0;
+                width: 100%;
                 height: 3px;
-                background-color: #0f172a; 
-                border-radius: 9999px; 
+                background-color: #0f172a;
+                border-radius: 9999px;
                 transform-origin: center;
                 animation: expandLine 0.3s cubic-bezier(0.25, 1, 0.5, 1) forwards;
             }
-            .nav-active:hover { transform: translateY(0) translateZ(0) !important; }
-            .nav-link:active { transform: translateY(1px) translateZ(0) !important; transition: transform 0.08s ease !important; }
-            .view-section { transition: opacity 0.3s ease, transform 0.3s ease; transform: translateY(0) translateZ(0); opacity: 1; will-change: opacity, transform; }
-            .view-section.hidden { display: none !important; opacity: 0; transform: translateY(4px) translateZ(0); }
-            .hover-subtle { transition: transform 0.3s ease, border-color 0.3s ease, box-shadow 0.3s ease; transform: translateZ(0); will-change: transform; }
-            .hover-subtle:hover { transform: translateY(-2px) translateZ(0); @apply border-slate-300 shadow-md; }
-            .btn-interactive { transition: transform 0.2s ease, box-shadow 0.2s ease; @apply active:scale-95 shadow-sm hover:shadow; }
-            .input-field { @apply w-full bg-white border border-gray-300 rounded-lg p-4 text-slate-900 font-medium; transition: border-color 0.2s ease, box-shadow 0.2s ease; outline: none !important; }
-            .input-field:focus { border-color: transparent !important; box-shadow: 0 0 0 2px rgba(0, 0, 0, 0.1) !important; }
-            .input-clean { @apply w-full text-slate-900 py-1.5 px-2 placeholder-gray-400 font-medium shadow-none rounded-lg; transition: background-color 0.2s ease, box-shadow 0.2s ease; background-color: transparent !important; border: 1px solid transparent !important; outline: none !important; }
-            .input-clean:focus { background-color: rgba(0, 0, 0, 0.02) !important; border-color: transparent !important; box-shadow: 0 0 0 2px rgba(0, 0, 0, 0.1) !important; }
-            .custom-checkbox { -webkit-appearance: none !important; -moz-appearance: none !important; appearance: none !important; width: 1.5rem !important; height: 1.5rem !important; min-width: 1.5rem !important; min-height: 1.5rem !important; border: 2px solid #cbd5e1 !important; border-radius: 9999px !important; background-color: transparent !important; cursor: pointer; display: inline-flex !important; align-items: center; justify-content: center; position: relative; outline: none !important; transition: background-color 0.2s ease, border-color 0.2s ease, box-shadow 0.2s ease; }
-            .custom-checkbox:focus { box-shadow: 0 0 0 2px rgba(0, 0, 0, 0.1) !important; }
-            .custom-checkbox:checked { background-color: #1e293b !important; border-color: #1e293b !important; }
-            .custom-checkbox:checked::after { content: ''; position: absolute; width: 5px; height: 9px; border: solid white; border-width: 0 2px 2px 0; transform: rotate(45deg); top: 3px; left: 7px; }
-            .reorder-active { background-color: #eff6ff !important; box-shadow: inset 0 0 0 2px #3b82f6, 0 15px 25px -5px rgba(0, 0, 0, 0.1) !important; position: relative; z-index: 9999 !important; animation: reorderVibrate 0.3s infinite linear; border-radius: 0.5rem; will-change: transform; }
-            .reorder-active input, .reorder-active button, .reorder-active div { @apply cursor-grabbing pointer-events-none !important; }
+
+            .nav-active:hover {
+                transform: translateY(0) translateZ(0) !important;
+            }
+
+            .nav-link:active {
+                transform: translateY(1px) translateZ(0) !important;
+                transition: transform 0.08s ease !important;
+            }
+
+            .view-section {
+                transition: opacity 0.3s ease, transform 0.3s ease;
+                transform: translateY(0) translateZ(0);
+                opacity: 1;
+                will-change: opacity, transform;
+            }
+
+            .view-section.hidden {
+                display: none !important;
+                opacity: 0;
+                transform: translateY(4px) translateZ(0);
+            }
+
+            .hover-subtle {
+                transition: transform 0.3s ease, border-color 0.3s ease, box-shadow 0.3s ease;
+                transform: translateZ(0);
+                will-change: transform;
+            }
+
+            .hover-subtle:hover {
+                transform: translateY(-2px) translateZ(0);
+                @apply border-slate-300 shadow-md;
+            }
+
+            .btn-interactive {
+                transition: transform 0.2s ease, box-shadow 0.2s ease;
+                @apply active:scale-95 shadow-sm hover:shadow;
+            }
+
+            .input-field {
+                @apply w-full bg-white border border-gray-300 rounded-lg p-4 text-slate-900 font-medium;
+                transition: border-color 0.2s ease, box-shadow 0.2s ease;
+                outline: none !important;
+            }
+
+            .input-field:focus {
+                border-color: transparent !important;
+                box-shadow: 0 0 0 2px rgba(0, 0, 0, 0.1) !important;
+            }
+
+            .input-clean {
+                @apply w-full text-slate-900 py-1.5 px-2 placeholder-gray-400 font-medium shadow-none rounded-lg;
+                transition: background-color 0.2s ease, box-shadow 0.2s ease;
+                background-color: transparent !important;
+                border: 1px solid transparent !important;
+                outline: none !important;
+            }
+
+            .input-clean:focus {
+                background-color: rgba(0, 0, 0, 0.02) !important;
+                border-color: transparent !important;
+                box-shadow: 0 0 0 2px rgba(0, 0, 0, 0.1) !important;
+            }
+
+            .custom-checkbox {
+                -webkit-appearance: none !important;
+                -moz-appearance: none !important;
+                appearance: none !important;
+                width: 1.5rem !important;
+                height: 1.5rem !important;
+                min-width: 1.5rem !important;
+                min-height: 1.5rem !important;
+                border: 2px solid #cbd5e1 !important;
+                border-radius: 9999px !important;
+                background-color: transparent !important;
+                cursor: pointer;
+                display: inline-flex !important;
+                align-items: center;
+                justify-content: center;
+                position: relative;
+                outline: none !important;
+                transition: background-color 0.2s ease, border-color 0.2s ease, box-shadow 0.2s ease;
+            }
+
+            .custom-checkbox:focus {
+                box-shadow: 0 0 0 2px rgba(0, 0, 0, 0.1) !important;
+            }
+
+            .custom-checkbox:checked {
+                background-color: #1e293b !important;
+                border-color: #1e293b !important;
+            }
+
+            .custom-checkbox:checked::after {
+                content: '';
+                position: absolute;
+                width: 5px;
+                height: 9px;
+                border: solid white;
+                border-width: 0 2px 2px 0;
+                transform: rotate(45deg);
+                top: 3px;
+                left: 7px;
+            }
+
+            .reorder-active {
+                background-color: #eff6ff !important;
+                box-shadow: inset 0 0 0 2px #3b82f6, 0 15px 25px -5px rgba(0, 0, 0, 0.1) !important;
+                position: relative;
+                z-index: 9999 !important;
+                animation: reorderVibrate 0.3s infinite linear;
+                border-radius: 0.5rem;
+                will-change: transform;
+            }
+
+            .reorder-active input,
+            .reorder-active button,
+            .reorder-active div {
+                @apply cursor-grabbing pointer-events-none !important;
+            }
         }
 
         @keyframes reorderVibrate {
-            0% { transform: scale(1.01) rotate(0deg) translateZ(0); }
-            25% { transform: scale(1.01) rotate(-0.3deg) translateZ(0); }
-            50% { transform: scale(1.01) rotate(0deg) translateZ(0); }
-            75% { transform: scale(1.01) rotate(0.3deg) translateZ(0); }
-            100% { transform: scale(1.01) rotate(0deg) translateZ(0); }
+            0% {
+                transform: scale(1.01) rotate(0deg) translateZ(0);
+            }
+
+            25% {
+                transform: scale(1.01) rotate(-0.3deg) translateZ(0);
+            }
+
+            50% {
+                transform: scale(1.01) rotate(0deg) translateZ(0);
+            }
+
+            75% {
+                transform: scale(1.01) rotate(0.3deg) translateZ(0);
+            }
+
+            100% {
+                transform: scale(1.01) rotate(0deg) translateZ(0);
+            }
         }
 
-        .cubic-bezier { transition-timing-function: cubic-bezier(0.34, 1.56, 0.64, 1) !important; }
-        @keyframes expandLine { from { transform: scaleX(0); opacity: 0; } to { transform: scaleX(1); opacity: 1; } }
-        .animate-fade-in { animation: fadeIn 0.3s ease-out forwards; }
-        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
-        .event-pill { padding: 2px 6px; border-radius: 6px; margin-bottom: 2px; font-weight: 500; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; display: block; }
-        .color-dot { width: 24px; height: 24px; border-radius: 50%; cursor: pointer; border: 2px solid transparent; transition: all 0.2s; }
-        input[type="radio"]:checked+.color-dot { border-color: #1e293b !important; box-shadow: 0 0 0 3px #fff, 0 0 0 5px #1e293b !important; transform: scale(1.1); }
-        .hide-scrollbar::-webkit-scrollbar { display: none; }
-        .hide-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+        .cubic-bezier {
+            transition-timing-function: cubic-bezier(0.34, 1.56, 0.64, 1) !important;
+        }
+
+        @keyframes expandLine {
+            from {
+                transform: scaleX(0);
+                opacity: 0;
+            }
+
+            to {
+                transform: scaleX(1);
+                opacity: 1;
+            }
+        }
+
+        .animate-fade-in {
+            animation: fadeIn 0.3s ease-out forwards;
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(10px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .event-pill {
+            padding: 4px 8px;
+            border-radius: 4px;
+            margin-bottom: 4px;
+            font-weight: 500;
+            display: block;
+            width: 100%;
+            /* Força a pill a ocupar toda a largura da célula */
+            box-sizing: border-box;
+            /* Garante que o padding não faça a pill ultrapassar a célula */
+            white-space: normal;
+            line-height: 1.2;
+            font-size: 12px;
+            word-break: break-word;
+        }
+
+        .color-dot {
+            width: 24px;
+            height: 24px;
+            border-radius: 50%;
+            cursor: pointer;
+            border: 2px solid transparent;
+            transition: all 0.2s;
+        }
+
+        input[type="radio"]:checked+.color-dot {
+            border-color: #1e293b !important;
+            box-shadow: 0 0 0 3px #fff, 0 0 0 5px #1e293b !important;
+            transform: scale(1.1);
+        }
+
+        .hide-scrollbar::-webkit-scrollbar {
+            display: none;
+        }
+
+        .hide-scrollbar {
+            -ms-overflow-style: none;
+            scrollbar-width: none;
+        }
     </style>
 </head>
 
@@ -104,16 +294,20 @@
             </div>
 
             <div class="flex gap-8 lowercase text-base font-semibold overflow-x-auto whitespace-nowrap hide-scrollbar">
-                <button onclick="switchView('visão geral')" class="nav-link nav-active" data-view="visão geral">visão geral</button>
+                <button onclick="switchView('visão geral')" class="nav-link nav-active" data-view="visão geral">visão
+                    geral</button>
                 <button onclick="switchView('fatura')" class="nav-link" data-view="fatura">fatura</button>
                 <button onclick="switchView('salário')" class="nav-link" data-view="salário">salário</button>
-                <button onclick="switchView('conexão bancária')" class="nav-link" data-view="conexão bancária">conexão bancária</button>
+                <button onclick="switchView('conexão bancária')" class="nav-link" data-view="conexão bancária">conexão
+                    bancária</button>
                 <button onclick="switchView('calendário')" class="nav-link" data-view="calendário">calendário</button>
             </div>
             <div class="flex items-center gap-6 text-sm lowercase font-bold tracking-wide shrink-0">
                 <input type="file" id="import-file" class="hidden" accept=".json">
-                <button onclick="document.getElementById('import-file').click()" class="text-slate-600 hover:text-slate-900 transition-colors duration-200 active:scale-95">importar</button>
-                <button onclick="exportState()" class="text-slate-600 hover:text-slate-900 transition-colors duration-200 active:scale-95">salvar</button>
+                <button onclick="document.getElementById('import-file').click()"
+                    class="text-slate-600 hover:text-slate-900 transition-colors duration-200 active:scale-95">importar</button>
+                <button onclick="exportState()"
+                    class="text-slate-600 hover:text-slate-900 transition-colors duration-200 active:scale-95">salvar</button>
             </div>
         </div>
     </nav>
@@ -146,19 +340,25 @@
                 <div class="bg-white rounded-xl border border-gray-200 p-8 flex flex-col h-full hover-subtle shadow-sm">
                     <div class="flex justify-between items-center border-b border-gray-100 pb-3 mb-5">
                         <h3 class="text-sm font-bold uppercase tracking-widest text-slate-800">Faturas</h3>
-                        <span id="overview-faturas-total" class="text-xs font-bold text-red-800 bg-red-50 px-3 py-1.5 rounded-lg border border-red-100">R$ 0,00</span>
+                        <span id="overview-faturas-total"
+                            class="text-xs font-bold text-red-800 bg-red-50 px-3 py-1.5 rounded-lg border border-red-100">R$
+                            0,00</span>
                     </div>
                     <div id="overview-faturas-list" class="space-y-3 flex-1"></div>
                 </div>
                 <div class="bg-white rounded-xl border border-gray-200 p-8 flex flex-col h-full hover-subtle shadow-sm">
                     <div class="flex justify-between items-center border-b border-gray-100 pb-3 mb-5">
                         <h3 class="text-sm font-bold uppercase tracking-widest text-slate-800">Minhas Contas</h3>
-                        <span id="overview-contas-total" class="text-xs font-bold text-emerald-800 bg-emerald-50 px-3 py-1.5 rounded-lg border border-emerald-100">R$ 0,00</span>
+                        <span id="overview-contas-total"
+                            class="text-xs font-bold text-emerald-800 bg-emerald-50 px-3 py-1.5 rounded-lg border border-emerald-100">R$
+                            0,00</span>
                     </div>
                     <div id="overview-accounts-list" class="space-y-3 flex-1"></div>
                 </div>
                 <div class="bg-white rounded-xl border border-gray-200 p-8 lg:col-span-2 hover-subtle shadow-sm">
-                    <h3 class="text-sm font-bold uppercase tracking-widest mb-5 text-slate-800 border-b border-gray-100 pb-3">Dívidas Ativas</h3>
+                    <h3
+                        class="text-sm font-bold uppercase tracking-widest mb-5 text-slate-800 border-b border-gray-100 pb-3">
+                        Dívidas Ativas</h3>
                     <div id="overview-debts-list" class="grid grid-cols-1 md:grid-cols-2 gap-4"></div>
                 </div>
             </div>
@@ -167,8 +367,15 @@
         <div id="view-fatura" class="view-section hidden space-y-6">
             <div class="flex justify-between items-center border-b border-gray-200 pb-4 mb-4">
                 <h2 class="text-xl font-bold text-slate-800 uppercase tracking-wide">CONTROLE DE FATURAS</h2>
-                <button onclick="openManageCategories()" class="flex items-center gap-2 px-4 py-2 bg-white border border-gray-200 hover:bg-slate-50 text-slate-600 hover:text-slate-900 font-bold lowercase rounded-lg transition-all btn-interactive shadow-sm">
-                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"></path><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path></svg> categorias
+                <button onclick="openManageCategories()"
+                    class="flex items-center gap-2 px-4 py-2 bg-white border border-gray-200 hover:bg-slate-50 text-slate-600 hover:text-slate-900 font-bold lowercase rounded-lg transition-all btn-interactive shadow-sm">
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                            d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z">
+                        </path>
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                            d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path>
+                    </svg> categorias
                 </button>
             </div>
             <div id="invoice-banks-container" class="grid grid-cols-1 gap-10 w-full"></div>
@@ -178,14 +385,19 @@
             <div class="flex justify-between items-center border-b border-gray-200 pb-4">
                 <div class="flex items-center gap-6">
                     <h2 class="text-xl font-bold text-slate-800 uppercase tracking-wide">FONTES DE RENDA</h2>
-                    <span class="text-base font-bold text-emerald-800 bg-emerald-50 px-4 py-2 rounded-lg border border-emerald-100" id="salario-total-header">R$ 0,00</span>
+                    <span
+                        class="text-base font-bold text-emerald-800 bg-emerald-50 px-4 py-2 rounded-lg border border-emerald-100"
+                        id="salario-total-header">R$ 0,00</span>
                 </div>
-                <button onclick="addIncomeRow()" class="px-5 py-2.5 bg-slate-800 hover:bg-slate-900 text-white text-base font-bold lowercase rounded-lg transition-all btn-interactive">+ adicionar renda</button>
+                <button onclick="addIncomeRow()"
+                    class="px-5 py-2.5 bg-slate-800 hover:bg-slate-900 text-white text-base font-bold lowercase rounded-lg transition-all btn-interactive">+
+                    adicionar renda</button>
             </div>
             <div class="bg-white border border-gray-200 rounded-xl overflow-hidden hover-subtle shadow-sm">
                 <table class="w-full text-left text-base border-collapse table-fixed">
                     <thead>
-                        <tr class="border-b border-gray-200 bg-gray-50 uppercase text-xs tracking-wider text-gray-500 font-bold">
+                        <tr
+                            class="border-b border-gray-200 bg-gray-50 uppercase text-xs tracking-wider text-gray-500 font-bold">
                             <th class="pl-8 py-5 w-[60%]">Descrição da Origem</th>
                             <th class="px-6 py-5 w-[30%] text-right">Valor Mensal</th>
                             <th class="pr-8 py-5 w-[10%] text-center">Ações</th>
@@ -200,77 +412,158 @@
             <section>
                 <div class="flex justify-between items-center mb-6 border-b border-gray-200 pb-4">
                     <h2 class="text-xl font-bold text-slate-800 uppercase tracking-wide">AJUSTE MANUAL DE LIQUIDEZ</h2>
-                    <button onclick="openBankModal()" class="px-5 py-2.5 bg-slate-800 hover:bg-slate-900 text-white text-base font-bold lowercase rounded-lg transition-all btn-interactive">+ novo banco</button>
+                    <button onclick="openBankModal()"
+                        class="px-5 py-2.5 bg-slate-800 hover:bg-slate-900 text-white text-base font-bold lowercase rounded-lg transition-all btn-interactive">+
+                        novo banco</button>
                 </div>
                 <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6" id="banking-accounts-grid"></div>
             </section>
             <section>
                 <div class="flex justify-between items-center mb-6 border-b border-gray-200 pb-4">
                     <h2 class="text-xl font-bold text-slate-800 uppercase tracking-wide">DÍVIDAS</h2>
-                    <button onclick="openDebtModal()" class="px-5 py-2.5 bg-slate-800 hover:bg-slate-900 text-white text-base font-bold lowercase rounded-lg transition-all btn-interactive">+ nova dívida</button>
+                    <button onclick="openDebtModal()"
+                        class="px-5 py-2.5 bg-slate-800 hover:bg-slate-900 text-white text-base font-bold lowercase rounded-lg transition-all btn-interactive">+
+                        nova dívida</button>
                 </div>
                 <div class="grid grid-cols-1 lg:grid-cols-2 gap-6" id="banking-debts-grid"></div>
             </section>
         </div>
 
         <div id="view-calendário" class="view-section hidden space-y-10">
-            <div class="bg-white rounded-2xl border border-gray-200 shadow-sm overflow-hidden p-6 w-full max-w-5xl mx-auto">
-                <header class="flex flex-col md:flex-row justify-between items-center mb-6 gap-4 border-b border-gray-100 pb-4">
+            <div
+                class="bg-white rounded-2xl border border-gray-200 shadow-sm overflow-hidden p-6 w-full max-w-[1400px] mx-auto">
+                <header
+                    class="flex flex-col md:flex-row justify-between items-center mb-6 gap-4 border-b border-gray-100 pb-4">
                     <div class="flex items-center gap-4">
-                        <button id="prev-btn" onclick="changeCalendarMonth(-1)" class="p-2 hover:bg-slate-100 text-slate-500 rounded-lg border border-gray-200 bg-white disabled:opacity-30 disabled:cursor-not-allowed">
-                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"></path></svg>
+                        <button id="prev-btn" onclick="changeCalendarMonth(-1)"
+                            class="p-2 hover:bg-slate-100 text-slate-500 rounded-lg border border-gray-200 bg-white disabled:opacity-30 disabled:cursor-not-allowed">
+                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                    d="M15 19l-7-7 7-7"></path>
+                            </svg>
                         </button>
                         <div class="relative flex flex-col items-center justify-center min-w-[200px]">
-                            <h1 id="calendar-title" class="text-xl md:text-2xl font-bold text-slate-800 uppercase text-center cursor-pointer hover:text-blue-600 transition-colors">...</h1>
-                            <span id="calendar-year-subtitle" class="text-xs font-bold text-slate-400 mt-1 uppercase tracking-widest">ANO ...</span>
+                            <h1 id="calendar-title"
+                                class="text-xl md:text-2xl font-bold text-slate-800 uppercase text-center cursor-pointer hover:text-blue-600 transition-colors">
+                                ...</h1>
+                            <span id="calendar-year-subtitle"
+                                class="text-xs font-bold text-slate-400 mt-1 uppercase tracking-widest">ANO ...</span>
                         </div>
-                        <button id="next-btn" onclick="changeCalendarMonth(1)" class="p-2 hover:bg-slate-100 text-slate-500 rounded-lg border border-gray-200 bg-white disabled:opacity-30 disabled:cursor-not-allowed">
-                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path></svg>
+                        <button id="next-btn" onclick="changeCalendarMonth(1)"
+                            class="p-2 hover:bg-slate-100 text-slate-500 rounded-lg border border-gray-200 bg-white disabled:opacity-30 disabled:cursor-not-allowed">
+                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7">
+                                </path>
+                            </svg>
                         </button>
                     </div>
                     <div class="flex items-center gap-3">
-                        <button onclick="openConfigModal()" class="text-xs font-bold uppercase tracking-widest text-blue-600 hover:text-blue-800 transition-colors">Configurar Ano Base</button>
-                        <button onclick="resetToCurrentMonth()" class="text-xs font-bold uppercase tracking-widest text-gray-400 hover:text-slate-800 transition-colors">Voltar para Jan</button>
+                        <button onclick="openConfigModal()"
+                            class="text-xs font-bold uppercase tracking-widest text-blue-600 hover:text-blue-800 transition-colors">Configurar
+                            Ano Base</button>
+                        <button onclick="resetToCurrentMonth()"
+                            class="text-xs font-bold uppercase tracking-widest text-gray-400 hover:text-slate-800 transition-colors">Voltar
+                            para Jan</button>
                     </div>
                 </header>
 
-                <div class="grid grid-cols-7 gap-2 text-center font-bold text-slate-500 mb-4 text-[10px] md:text-xs uppercase tracking-widest">
-                    <div class="py-2">Dom</div><div class="py-2">Seg</div><div class="py-2">Ter</div><div class="py-2">Qua</div><div class="py-2">Qui</div><div class="py-2">Sex</div><div class="py-2">Sáb</div>
+                <div
+                    class="grid grid-cols-7 gap-2 text-center font-bold text-slate-500 mb-4 text-[10px] md:text-xs uppercase tracking-widest">
+                    <div class="py-2">Dom</div>
+                    <div class="py-2">Seg</div>
+                    <div class="py-2">Ter</div>
+                    <div class="py-2">Qua</div>
+                    <div class="py-2">Qui</div>
+                    <div class="py-2">Sex</div>
+                    <div class="py-2">Sáb</div>
                 </div>
-                <div id="calendar-grid" class="grid grid-cols-7 gap-2"></div>
+                <div id="calendar-grid" class="grid grid-cols-11 gap-2"></div>
             </div>
         </div>
     </main>
 
-    <div id="bottom-bar-wrapper" class="fixed bottom-0 left-0 w-full z-50 transition-all duration-500 cubic-bezier translate-y-0">
-        <button onclick="toggleBottomBar()" class="absolute -top-7 left-1/2 -translate-x-1/2 bg-white border border-gray-300 border-b-0 rounded-t-xl px-8 py-1 shadow-sm text-gray-500 hover:text-slate-800 transition-colors outline-none cursor-pointer">
-            <svg id="bottom-bar-icon" class="w-5 h-5 transition-transform duration-300" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path id="bottom-bar-path" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path></svg>
+    <div id="bottom-bar-wrapper"
+        class="fixed bottom-0 left-0 w-full z-50 transition-all duration-500 cubic-bezier translate-y-0">
+        <button onclick="toggleBottomBar()"
+            class="absolute -top-7 left-1/2 -translate-x-1/2 bg-white border border-gray-300 border-b-0 rounded-t-xl px-8 py-1 shadow-sm text-gray-500 hover:text-slate-800 transition-colors outline-none cursor-pointer">
+            <svg id="bottom-bar-icon" class="w-5 h-5 transition-transform duration-300" fill="none"
+                stroke="currentColor" viewBox="0 0 24 24">
+                <path id="bottom-bar-path" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                    d="M19 9l-7 7-7-7"></path>
+            </svg>
         </button>
         <div class="w-full bg-white border-t border-gray-300 shadow-[0_-10px_30px_-10px_rgba(0,0,0,0.05)] py-4">
             <div class="max-w-[1400px] mx-auto px-8 flex items-center justify-between text-base">
                 <div class="flex flex-wrap items-center gap-x-8 gap-y-2">
-                    <div class="flex items-baseline gap-2 shrink-0"><span class="text-gray-500 text-[10px] md:text-xs font-bold uppercase tracking-widest">saldo:</span><span id="bot-saldo" class="font-bold text-slate-900 tracking-tight text-lg whitespace-nowrap">R$ 0,00</span></div>
-                    <div class="flex items-baseline gap-2 shrink-0"><span class="text-gray-500 text-[10px] md:text-xs font-bold uppercase tracking-widest">dívidas:</span><span id="bot-dividas" class="font-bold text-slate-900 tracking-tight text-lg whitespace-nowrap">R$ 0,00</span></div>
-                    <div class="flex items-baseline gap-2 shrink-0"><span class="text-gray-500 text-[10px] md:text-xs font-bold uppercase tracking-widest">faturas:</span><span id="bot-faturas" class="font-bold text-slate-900 tracking-tight text-lg whitespace-nowrap">R$ 0,00</span></div>
-                    <div class="flex items-baseline gap-2 shrink-0"><span class="text-gray-500 text-[10px] md:text-xs font-bold uppercase tracking-widest">meus gastos:</span><span id="bot-meus-gastos" class="font-bold text-slate-900 tracking-tight text-lg whitespace-nowrap">R$ 0,00</span></div>
-                    <div class="flex items-baseline gap-2 shrink-0"><span class="text-gray-500 text-[10px] md:text-xs font-bold uppercase tracking-widest">terceiros:</span><span id="bot-terceiros" class="font-bold text-slate-900 tracking-tight text-lg whitespace-nowrap">R$ 0,00</span></div>
+                    <div class="flex items-baseline gap-2 shrink-0"><span
+                            class="text-gray-500 text-[10px] md:text-xs font-bold uppercase tracking-widest">saldo:</span><span
+                            id="bot-saldo" class="font-bold text-slate-900 tracking-tight text-lg whitespace-nowrap">R$
+                            0,00</span></div>
+                    <div class="flex items-baseline gap-2 shrink-0"><span
+                            class="text-gray-500 text-[10px] md:text-xs font-bold uppercase tracking-widest">dívidas:</span><span
+                            id="bot-dividas"
+                            class="font-bold text-slate-900 tracking-tight text-lg whitespace-nowrap">R$ 0,00</span>
+                    </div>
+                    <div class="flex items-baseline gap-2 shrink-0"><span
+                            class="text-gray-500 text-[10px] md:text-xs font-bold uppercase tracking-widest">faturas:</span><span
+                            id="bot-faturas"
+                            class="font-bold text-slate-900 tracking-tight text-lg whitespace-nowrap">R$ 0,00</span>
+                    </div>
+                    <div class="flex items-baseline gap-2 shrink-0"><span
+                            class="text-gray-500 text-[10px] md:text-xs font-bold uppercase tracking-widest">meus
+                            gastos:</span><span id="bot-meus-gastos"
+                            class="font-bold text-slate-900 tracking-tight text-lg whitespace-nowrap">R$ 0,00</span>
+                    </div>
+                    <div class="flex items-baseline gap-2 shrink-0"><span
+                            class="text-gray-500 text-[10px] md:text-xs font-bold uppercase tracking-widest">terceiros:</span><span
+                            id="bot-terceiros"
+                            class="font-bold text-slate-900 tracking-tight text-lg whitespace-nowrap">R$ 0,00</span>
+                    </div>
                 </div>
                 <div class="flex items-center gap-3 border-l border-gray-200 pl-6 shrink-0">
-                    <span class="text-slate-800 text-[10px] md:text-xs font-bold uppercase tracking-widest">disponível:</span><span id="bot-disponivel" class="font-bold tracking-tight text-xl text-emerald-800 whitespace-nowrap">R$ 0,00</span>
+                    <span
+                        class="text-slate-800 text-[10px] md:text-xs font-bold uppercase tracking-widest">disponível:</span><span
+                        id="bot-disponivel"
+                        class="font-bold tracking-tight text-xl text-emerald-800 whitespace-nowrap">R$ 0,00</span>
                 </div>
             </div>
         </div>
     </div>
 
-    <div id="modal-container" class="fixed inset-0 bg-slate-900/40 backdrop-blur-[2px] z-[60] flex items-center justify-center p-4 transition-opacity duration-300 opacity-0 pointer-events-none hidden">
-        <div class="bg-white border border-gray-200 rounded-2xl w-full max-w-lg p-8 shadow-2xl scale-95 transition-transform duration-300 cubic-bezier" id="modal-content"></div>
+    <div id="modal-container"
+        class="fixed inset-0 bg-slate-900/40 backdrop-blur-[2px] z-[60] flex items-center justify-center p-4 transition-opacity duration-300 opacity-0 pointer-events-none hidden">
+        <div class="bg-white border border-gray-200 rounded-2xl w-full max-w-lg p-8 shadow-2xl scale-95 transition-transform duration-300 cubic-bezier"
+            id="modal-content"></div>
     </div>
 
-    <div id="action-menu" class="hidden fixed bg-white border border-gray-200 shadow-xl rounded-xl py-2 w-48 z-[100] transform scale-95 opacity-0 transition-all duration-200 origin-top-left">
-        <button id="ctx-btn-category" class="w-full text-left px-5 py-3 text-sm text-purple-600 font-bold hover:bg-purple-50 transition-colors flex items-center gap-3 outline-none hidden"><svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 7h.01M7 3h5c.512 0 1.024.195 1.414.586l7 7a2 2 0 010 2.828l-7 7a2 2 0 01-2.828 0l-7-7A1.994 1.994 0 013 12V7a4 4 0 014-4z"></path></svg><span>categoria</span></button>
-        <button id="ctx-btn-move" class="w-full text-left px-5 py-3 text-sm text-blue-600 font-bold hover:bg-blue-50 transition-colors flex items-center gap-3 outline-none hidden"><svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 8h16M4 16h16"></path></svg><span>mover</span></button>
-        <button id="ctx-btn-refund" class="w-full text-left px-5 py-3 text-sm text-emerald-700 font-bold hover:bg-emerald-50 transition-colors flex items-center gap-3 outline-none hidden"><svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg><span id="ctx-refund-text">reembolso</span></button>
-        <button id="ctx-btn-delete" class="w-full text-left px-5 py-3 text-sm text-red-600 font-bold hover:bg-red-50 transition-colors flex items-center gap-3 outline-none hidden"><svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path></svg><span>excluir</span></button>
+    <div id="action-menu"
+        class="hidden fixed bg-white border border-gray-200 shadow-xl rounded-xl py-2 w-48 z-[100] transform scale-95 opacity-0 transition-all duration-200 origin-top-left">
+        <button id="ctx-btn-category"
+            class="w-full text-left px-5 py-3 text-sm text-purple-600 font-bold hover:bg-purple-50 transition-colors flex items-center gap-3 outline-none hidden"><svg
+                class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                    d="M7 7h.01M7 3h5c.512 0 1.024.195 1.414.586l7 7a2 2 0 010 2.828l-7 7a2 2 0 01-2.828 0l-7-7A1.994 1.994 0 013 12V7a4 4 0 014-4z">
+                </path>
+            </svg><span>categoria</span></button>
+        <button id="ctx-btn-move"
+            class="w-full text-left px-5 py-3 text-sm text-blue-600 font-bold hover:bg-blue-50 transition-colors flex items-center gap-3 outline-none hidden"><svg
+                class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 8h16M4 16h16"></path>
+            </svg><span>mover</span></button>
+        <button id="ctx-btn-refund"
+            class="w-full text-left px-5 py-3 text-sm text-emerald-700 font-bold hover:bg-emerald-50 transition-colors flex items-center gap-3 outline-none hidden"><svg
+                class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                    d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z">
+                </path>
+            </svg><span id="ctx-refund-text">reembolso</span></button>
+        <button id="ctx-btn-delete"
+            class="w-full text-left px-5 py-3 text-sm text-red-600 font-bold hover:bg-red-50 transition-colors flex items-center gap-3 outline-none hidden"><svg
+                class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                    d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16">
+                </path>
+            </svg><span>excluir</span></button>
     </div>
 
     <script>
@@ -392,83 +685,90 @@
             title.textContent = monthNames[month];
             subtitle.textContent = `Ano Fixo: ${year}`;
 
-            // Gerencia botões (Travando em Jan e Dez)
+            // Gerencia botões
             const prevBtn = document.getElementById('prev-btn');
             const nextBtn = document.getElementById('next-btn');
-            if (prevBtn) { prevBtn.disabled = (month === 0); }
-            if (nextBtn) { nextBtn.disabled = (month === 11); }
-
-            const daysInMonth = getDaysInMonth(month);
-            const startDayOfWeek = calculateMonthStart(month);
-            const prevMonthDays = month > 0 ? getDaysInMonth(month - 1) : 31; 
+            if (prevBtn) prevBtn.disabled = (month === 0);
+            if (nextBtn) nextBtn.disabled = (month === 11);
 
             grid.innerHTML = '';
 
-            // Renderiza 42 células (6 semanas x 7 dias) para grid perfeito e alinhado
-            for (let i = 0; i < 42; i++) {
-                const dayEl = document.createElement('div');
-                
-                if (i < startDayOfWeek) {
-                    // Dias do mês anterior
-                    const dayNum = prevMonthDays - startDayOfWeek + i + 1;
-                    dayEl.className = `border border-gray-100 min-h-[96px] p-2 rounded-lg flex flex-col gap-1 bg-gray-50 opacity-40`;
-                    dayEl.innerHTML = `<span class="text-sm font-bold text-slate-400">${dayNum}</span>`;
-                } else if (i < startDayOfWeek + daysInMonth) {
-                    // Dias do mês atual
-                    const dayNum = i - startDayOfWeek + 1;
-                    const dateKey = `${year}-${String(month + 1).padStart(2, '0')}-${String(dayNum).padStart(2, '0')}`;
-                    
-                    dayEl.className = `border border-gray-100 min-h-[96px] p-2 rounded-lg flex flex-col gap-1 bg-white cursor-pointer hover:border-blue-300 transition-colors`;
-                    dayEl.onclick = () => openCalendarModal(dateKey, dayNum, monthNames[month], year);
-                    dayEl.innerHTML = `<span class="text-sm font-bold text-slate-800">${dayNum}</span>`;
+            // Força o grid a ser grid
+            grid.style.display = 'grid';
+            grid.style.gridTemplateColumns = 'repeat(7, minmax(0, 1fr))';
+            grid.className = "grid gap-1";
 
-                    const eventsList = getCombinedEventsForDate(dateKey);
-                    eventsList.forEach(evt => {
-                        const color = colorPalette[evt.colorIndex] || colorPalette[0];
-                        dayEl.innerHTML += `<div class="event-pill text-[9px] text-white shadow-sm leading-tight px-1 py-0.5 rounded" style="background-color: ${color.hex};">${evt.text}</div>`;
-                    });
-                } else {
-                    // Dias do próximo mês
-                    const dayNum = i - startDayOfWeek - daysInMonth + 1;
-                    dayEl.className = `border border-gray-100 min-h-[96px] p-2 rounded-lg flex flex-col gap-1 bg-gray-50 opacity-40`;
-                    dayEl.innerHTML = `<span class="text-sm font-bold text-slate-400">${dayNum}</span>`;
-                }
+            // Intervalo: 1º do mês - 5 dias até o último do mês + 5 dias
+            const firstDay = new Date(year, month, 1);
+            const lastDay = new Date(year, month + 1, 0);
+            let startDate = new Date(firstDay);
+            startDate.setDate(firstDay.getDate() - 5);
+            const endDate = new Date(lastDay);
+            endDate.setDate(lastDay.getDate() + 5);
+
+            // Alinhamento inicial (células vazias)
+            const startWeekday = startDate.getDay();
+            for (let i = 0; i < startWeekday; i++) {
+                grid.appendChild(document.createElement('div'));
+            }
+
+            // Loop de renderização
+            let iter = new Date(startDate);
+            while (iter <= endDate) {
+                const dayNum = iter.getDate();
+                const currentM = iter.getMonth();
+                const currentY = iter.getFullYear();
+                const isCurrentMonth = (currentM === month);
+                const dateKey = `${currentY}-${String(currentM + 1).padStart(2, '0')}-${String(dayNum).padStart(2, '0')}`;
+
+                const dayEl = document.createElement('div');
+                dayEl.className = `border border-gray-100 min-h-[160px] p-1 rounded-lg flex flex-col gap-1 cursor-pointer hover:border-blue-300 transition-colors ${isCurrentMonth ? 'bg-white' : 'bg-gray-50 opacity-40'}`;
+                dayEl.onclick = () => openCalendarModal(dateKey, dayNum, monthNames[currentM], currentY);
+                dayEl.innerHTML = `<span class="text-sm font-bold ${isCurrentMonth ? 'text-slate-800' : 'text-slate-400'}">${dayNum}</span>`;
+
+                // CORREÇÃO: Removi o "if (isCurrentMonth)" daqui. 
+                // Agora ele busca eventos para TODOS os dias renderizados no grid.
+                const eventsList = getCombinedEventsForDate(dateKey);
+                eventsList.forEach(evt => {
+                    const color = colorPalette[evt.colorIndex] || colorPalette[0];
+                    dayEl.innerHTML += `<div class="event-pill text-white shadow-sm leading-tight rounded" style="background-color: ${color.hex};">${evt.text}</div>`;
+                });
+
                 grid.appendChild(dayEl);
+                iter.setDate(iter.getDate() + 1);
             }
         };
 
         function getCombinedEventsForDate(dateKey) {
             const list = [];
-            const targetY = parseInt(dateKey.split('-')[0]);
-            const targetM = parseInt(dateKey.split('-')[1]);
-            const targetD = parseInt(dateKey.split('-')[2]);
+            const partsKey = dateKey.split('-');
+            const targetM = parseInt(partsKey[1], 10);
+            const targetD = parseInt(partsKey[2], 10);
 
             appState.banks.forEach(b => {
                 b.cardInvoice.forEach(exp => {
                     if (exp.date && exp.desc) {
-                        let parts = exp.date.split('/');
-                        let d = parseInt(parts[0]);
-                        let m = parts.length > 1 ? parseInt(parts[1]) : null;
-                        let y = parts.length > 2 ? parseInt(parts[2]) : null;
+                        const parts = exp.date.split('/');
+                        const expD = parseInt(parts[0], 10);
+                        const expM = parts.length > 1 ? parseInt(parts[1], 10) : null;
 
-                        if (!isNaN(d) && d === targetD) {
-                            if (m === null || m === targetM) {
-                                if (y === null || y === targetY) {
-                                    let evColorIndex = b.colorIndex;
-                                    if (exp.categoryId) {
-                                        const cat = appState.categories.find(c => c.id === exp.categoryId);
-                                        if (cat) evColorIndex = cat.colorIndex;
-                                    }
-                                    list.push({ text: exp.desc, colorIndex: evColorIndex, isAuto: true, value: exp.value });
-                                }
+                        // Validação estrita: Mês e Dia precisam bater
+                        if (expD === targetD && expM === targetM) {
+                            let evColorIndex = b.colorIndex;
+                            if (exp.categoryId) {
+                                const cat = appState.categories.find(c => c.id === exp.categoryId);
+                                if (cat) evColorIndex = cat.colorIndex;
                             }
+                            list.push({ text: exp.desc, colorIndex: evColorIndex, isAuto: true, value: exp.value });
                         }
                     }
                 });
             });
 
             if (appState.calendarEvents && appState.calendarEvents[dateKey]) {
-                appState.calendarEvents[dateKey].forEach((evt, idx) => { list.push({ text: evt.text, colorIndex: evt.colorIndex, isAuto: false, manualIndex: idx }); });
+                appState.calendarEvents[dateKey].forEach((evt, idx) => {
+                    list.push({ text: evt.text, colorIndex: evt.colorIndex, isAuto: false, manualIndex: idx });
+                });
             }
             return list;
         }
@@ -563,7 +863,7 @@
 
             const applyColor = (el, val, baseClass) => {
                 if (!el) return;
-                if (val < 0) { el.className = baseClass.replace(/text-[a-z]+-[0-9]+/, 'text-red-800'); el.textContent = '- R$ ' + formatMoney(Math.abs(val)); } 
+                if (val < 0) { el.className = baseClass.replace(/text-[a-z]+-[0-9]+/, 'text-red-800'); el.textContent = '- R$ ' + formatMoney(Math.abs(val)); }
                 else { el.className = baseClass; el.textContent = 'R$ ' + formatMoney(val); }
             };
 
@@ -644,7 +944,7 @@
                     const isRefund = exp.isRefund || (exp.installments && String(exp.installments).includes('+'));
                     let rClass = isRefund ? 'bg-emerald-500/[0.15] border-emerald-200/50' : (exp.isThirdParty ? 'bg-amber-500/[0.15] border-amber-200/50' : (index % 2 === 0 ? 'bg-transparent' : 'bg-slate-50 border-gray-100'));
                     let catColorHex = 'transparent'; let catName = 'Sem categoria (clique no lápis e selecione)'; let catHasColor = false;
-                    
+
                     if (exp.categoryId) {
                         const cat = appState.categories.find(c => c.id === exp.categoryId);
                         if (cat && colorPalette[cat.colorIndex]) { catColorHex = colorPalette[cat.colorIndex].hex; catName = `Categoria: ${cat.name}`; catHasColor = true; } else { delete exp.categoryId; }
@@ -730,7 +1030,7 @@
 
         window.handleCategorySubmit = function (e) {
             e.preventDefault(); const name = document.getElementById('new-cat-name').value; const colorIndex = parseInt(document.getElementById('new-cat-col').value); const editId = document.getElementById('edit-cat-id')?.value;
-            if (editId) { const index = appState.categories.findIndex(c => c.id === editId); if (index !== -1) { appState.categories[index] = { ...appState.categories[index], name: name, colorIndex: colorIndex }; } document.getElementById('edit-cat-id').remove(); } 
+            if (editId) { const index = appState.categories.findIndex(c => c.id === editId); if (index !== -1) { appState.categories[index] = { ...appState.categories[index], name: name, colorIndex: colorIndex }; } document.getElementById('edit-cat-id').remove(); }
             else { appState.categories.push({ id: 'cat_' + Date.now(), name, colorIndex }); }
             saveState(); openManageCategories();
         };
@@ -790,7 +1090,7 @@
             if (e.target.tagName === 'INPUT') return; e.preventDefault(); e.stopPropagation();
             const menu = document.getElementById('action-menu'); const btnCat = document.getElementById('ctx-btn-category'); const btnMove = document.getElementById('ctx-btn-move'); const btnRefund = document.getElementById('ctx-btn-refund'); const btnDelete = document.getElementById('ctx-btn-delete'); const btnRefundText = document.getElementById('ctx-refund-text');
             btnRefundText.textContent = isRefund ? 'remover reembolso' : 'reembolso';
-            if (source === 'right-click') { btnCat.style.display = 'none'; btnMove.style.display = 'flex'; btnRefund.style.display = 'none'; btnDelete.style.display = 'none'; } 
+            if (source === 'right-click') { btnCat.style.display = 'none'; btnMove.style.display = 'flex'; btnRefund.style.display = 'none'; btnDelete.style.display = 'none'; }
             else if (source === 'pencil') { btnCat.style.display = 'flex'; btnMove.style.display = 'none'; btnRefund.style.display = 'flex'; btnDelete.style.display = 'flex'; }
             btnCat.onclick = () => { window.openCategoryPicker(bankId, expId); window.hideActionMenu(); }; btnMove.onclick = () => { window.startReorderMode(bankId, expId); window.hideActionMenu(); }; btnRefund.onclick = () => { window.toggleRefund(bankId, expId); window.hideActionMenu(); }; btnDelete.onclick = () => { deleteInvoiceExp(bankId, expId); window.hideActionMenu(); };
             menu.classList.remove('hidden'); let x = e.clientX; let y = e.clientY; const mw = 192; const mh = source === 'pencil' ? 200 : 50; if (x + mw > window.innerWidth) x = window.innerWidth - mw - 10; if (y + mh > window.innerHeight) y = window.innerHeight - mh - 10; menu.style.left = `${x}px`; menu.style.top = `${y}px`; setTimeout(() => { menu.classList.remove('scale-95', 'opacity-0'); menu.classList.add('scale-100', 'opacity-100'); }, 10);
@@ -803,7 +1103,7 @@
             const container = document.getElementById('modal-container'); const content = document.getElementById('modal-content'); content.innerHTML = htmlContent; container.classList.remove('hidden'); setTimeout(() => { container.classList.remove('opacity-0', 'pointer-events-none'); content.classList.remove('scale-95'); content.classList.add('scale-100'); }, 10);
         }
         window.closeModal = function () { const container = document.getElementById('modal-container'); container.classList.add('hidden'); container.classList.add('opacity-0'); container.classList.add('pointer-events-none'); }
-        
+
         window.openBankModal = function (editId = null) {
             const b = (typeof editId === 'string') ? appState.banks.find(x => x.id === editId) : null;
             const colorsHtml = colorPalette.map((c, i) => `<div onclick="document.getElementById('bnk-col').value = ${i}; document.querySelectorAll('.col-pick').forEach(el=>el.classList.remove('ring-4', 'ring-slate-300', 'border-white')); this.classList.add('ring-4', 'ring-slate-300', 'border-white');" class="col-pick w-10 h-10 rounded-full cursor-pointer border-2 border-transparent transition-transform duration-200 shrink-0 shadow-sm ${b && b.colorIndex === i ? 'ring-4 ring-slate-300 border-white' : (!b && i === 0 ? 'ring-4 ring-slate-300 border-white' : '')}" style="background-color: ${c.hex}"></div>`).join('');
@@ -863,15 +1163,15 @@
         window.exportState = function () {
             const now = new Date();
             const pad = (n) => n.toString().padStart(2, '0');
-            
+
             const day = pad(now.getDate());
             const month = pad(now.getMonth() + 1);
             const year = now.getFullYear();
             const hour = pad(now.getHours());
             const minute = pad(now.getMinutes());
-            
+
             const fileName = `Fatura(${day}.${month}.${year})(${hour}-${minute}).json`;
-            
+
             const a = document.createElement('a');
             a.href = URL.createObjectURL(new Blob([JSON.stringify(appState, null, 2)], { type: "application/json" }));
             a.download = fileName;
@@ -883,4 +1183,5 @@
         function formatMoney(v) { return (v || 0).toLocaleString('pt-BR', { minimumFractionDigits: 2, maximumFractionDigits: 2 }); }
     </script>
 </body>
+
 </html>
