@@ -4,7 +4,8 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Painel Financeiro Tracker</title>
+    <title>Fatura Tracker</title>
+    <link rel="icon" type="image/png" href="logo.png">
     <script src="https://cdn.tailwindcss.com"></script>
     <script>
         tailwind.config = {
@@ -98,6 +99,10 @@
 
     <nav class="bg-white border-b border-gray-200 sticky top-0 z-40 shadow-sm transition-all duration-300">
         <div class="max-w-[1400px] mx-auto px-8 h-16 flex items-center justify-between">
+            <div class="flex items-center mr-6">
+                <img src="logo.png" alt="Logo" class="h-15 w-12">
+            </div>
+
             <div class="flex gap-8 lowercase text-base font-semibold overflow-x-auto whitespace-nowrap hide-scrollbar">
                 <button onclick="switchView('visão geral')" class="nav-link nav-active" data-view="visão geral">visão geral</button>
                 <button onclick="switchView('fatura')" class="nav-link" data-view="fatura">fatura</button>
